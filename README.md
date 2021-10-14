@@ -30,30 +30,40 @@ Add Python libraries -- system wide
 
 `sudo python3 setup.py install`
 
-## Running the export
+## Extract from Islandora Legacy
 
 * define a list of pid to export from the Islandora Legacy site and added to a file, one per line
 
-* execute the export script
+* execute the extraction script
   * `--id_list` : list of PIDs to export
   * `--server` : the Islandora Legacy server (Drupal 7)
   * `--export_dir` : directory to store the export package
 
 `python3 islandora7_export_2.py --id_list test_data/z --server https://example.com/ --export_dir /tmp/z/`
 
-## Running the XQuery transforms and metadata inquiry tools
-
-* install basex.org
-* create new database and import the `combined_metadata` directory contents produced by the export
-* run XQuery from the `xqery` directory to transform XML metadata into a CSV for use with Islandora Workbench
-
-## Running the after Islandora Workbench import verification script
+## Transformation and metadata inquiry tools
 
 This script compares the Islandora Legacy content with the new imported via Islandora Workbench content in the new Islandora site to verify/audit the export, transformation, and loading phase. The comparison is made between the Islandora Legacy MODS metadata and the Islandora JSON-LD output.
 
+Reference for the metadata conversion: [Islandora MIG](https://github.com/islandora-interest-groups/Islandora-Metadata-Interest-Group/wiki/MIG-MODS-to-RDF-Working-Documents) and [Islandora MIG (Metadata Interest Group) MODS-RDF Simplified Mapping](https://docs.google.com/spreadsheets/d/18u2qFJ014IIxlVpM3JXfDEFccwBZcoFsjbBGpvL0jJI/edit#gid=0)
+
+* setup and running transformation and metadata inquiry tools
+  * install basex.org
+  * create new database and import the `combined_metadata` directory contents produced by the export
+  * run XQuery from the `xqery` directory to transform XML metadata into a CSV for use with Islandora Workbench
+
+## Loading to Islandora
+
+* Load via [Islandora Workbench](https://github.com/mjordan/islandora_workbench) using the CSV created during the the transformation section
+
+### Auditing: running the after Islandora Workbench import verification script
+
+Attempts to compare Islandora Legacy XML to the JSON-LD output of Islandora (Drupal 8+) node using the mappings defined by the [Islandora MIG](https://github.com/islandora-interest-groups/Islandora-Metadata-Interest-Group/wiki/MIG-MODS-to-RDF-Working-Documents) and with the document: [Islandora MIG (Metadata Interest Group) MODS-RDF Simplified Mapping](https://docs.google.com/spreadsheets/d/18u2qFJ014IIxlVpM3JXfDEFccwBZcoFsjbBGpvL0jJI/edit#gid=0)
+
+
 `python3 islandora_audit.py --id_list test_data/z --islandora_legacy https://example.com/ --islandora https://example_9.com/ --comparison_config test_data/comparison_config.sample.json`
 
-ToDo:
+### ToDo
 
 * how to find mapping between UUID in Islandora Legacy and identifier in new Islandora
 * hot to handle mappings where the new Islandora JSON LD returns a taxonomy ID where Islandora Legacy uses textual terms
