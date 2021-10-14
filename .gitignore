@@ -1,0 +1,5 @@
+test_data
+__pycache__
+*.log
+Islandora7_Export.egg-info/
+dist/
