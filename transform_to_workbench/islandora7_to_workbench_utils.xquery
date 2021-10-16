@@ -27,18 +27,21 @@ declare option saxon:output "method=xml";
 declare function th:get_model_from_cModel ($uri as xs:string) as xs:string
 {
     switch ($uri)
-        case "info:fedora/cwrc:documentCModel" return "28148"
+        case "info:fedora/cwrc:documentCModel" return "15"
         case "infor:fedora/islandora:image" return "13"
-        case "info:fedora/islandora:sp-audioCModel" return "54954954"
+        case "info:fedora/islandora:sp-audioCModel" return "10"
+        case "info:fedora/islandora:collection" return "23"
         default return "error"
 };
 
 declare function th:get_type_from_cModel ($uri as xs:string) as xs:string
 {
     switch ($uri)
-        case "info:fedora/cwrc:documentCModel" return "28148"
+        case "info:fedora/cwrc:documentCModel" return "33"
         case "infor:fedora/islandora:image" return "25"
-        case "info:fedora/islandora:sp-audioCModel" return "54954954"
+        case "info:fedora/islandora:sp-audioCModel" return "30"
+        case "info:fedora/islandora:video" return "27"
+        case "info:fedora/islandora:collection" return "12"
         default return "error"
 };
 

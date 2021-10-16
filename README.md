@@ -39,7 +39,25 @@ Add Python libraries -- system wide
   * `--server` : the Islandora Legacy server (Drupal 7)
   * `--export_dir` : directory to store the export package
 
-`python3 islandora7_export_2.py --id_list test_data/z --server https://example.com/ --export_dir /tmp/z/`
+``` bash
+python3 islandora7_export_2.py --id_list test_data/z --server ${ISLANDORA_LEGACY:-https://example.com} --export_dir /tmp/z/
+```
+
+* results in the export directory
+  * each Fedora 3 datastream extracted as a file (not in the exclusion list defined in the script)
+  * a combination of metadata combined into a single output file (metadata datastreams defined in the script) 
+
+``` xml
+<metadata pid="" label="" owner="" created="" modified="">
+  <media_exports>
+    </media filepath="" ds_id="">
+    <!-- a list of Islandora Legacy extracted datastreams with their path and datastream id -->
+  </media_exports>
+  <resource_metadata>
+    <!-- a list of extracted metadata datastreams including MODS, RELS-EXT, ect. -->
+  </resource_metadata>
+</metadata>
+```
 
 ## Transformation and metadata inquiry tools
 
@@ -48,13 +66,19 @@ This script compares the Islandora Legacy content with the new imported via Isla
 Reference for the metadata conversion: [Islandora MIG](https://github.com/islandora-interest-groups/Islandora-Metadata-Interest-Group/wiki/MIG-MODS-to-RDF-Working-Documents) and [Islandora MIG (Metadata Interest Group) MODS-RDF Simplified Mapping](https://docs.google.com/spreadsheets/d/18u2qFJ014IIxlVpM3JXfDEFccwBZcoFsjbBGpvL0jJI/edit#gid=0)
 
 * setup and running transformation and metadata inquiry tools
-  * install basex.org
-  * create new database and import the `combined_metadata` directory contents produced by the export
-  * run XQuery from the `xqery` directory to transform XML metadata into a CSV for use with Islandora Workbench
+  * install basex.org according to the basex.org documentation
+  * create new database and import the `combined_metadata` directory contents produced by the `Exraction` step
+  * run XQuery from the `Transformation` directory to transform XML metadata into a CSV for use with Islandora Workbench
 
 ## Loading to Islandora
 
-* Load via [Islandora Workbench](https://github.com/mjordan/islandora_workbench) using the CSV created during the the transformation section
+* Load via [Islandora Workbench](https://github.com/mjordan/islandora_workbench) using the CSV created during the the transformation section. See the Workbench documentation for details. A sample config is included in the `test_data` directory.
+
+* to check
+
+```bash
+ python3 workbench --config ../workbench_config/workbench_config_test_02.yaml --check
+ ````
 
 ### Auditing: running the after Islandora Workbench import verification script
 

@@ -1,0 +1,12 @@
+{
+  "comparison": {
+    "title": {
+      "old": "mods:titleInfo/mods:title",
+      "new": "http://purl.org/dc/terms/title"
+    },
+    "genre": {
+      "old": "mods:genre",
+      "new": "http://purl.org/dc/terms/type"
+    }
+  }
+}

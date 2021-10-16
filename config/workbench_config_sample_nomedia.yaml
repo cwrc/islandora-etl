@@ -1,0 +1,9 @@
+task: create
+host: "https://islandora.example.com"
+username: "islandora user name" 
+password: "islandora password" 
+input_dir: test_data/
+input_csv: input.csv
+output_csv: output.csv
+nodes_only: true
+

@@ -49,12 +49,6 @@ declare variable $FIELD_MEMBER_OF external := "1";
             <field_member_of>{$FIELD_MEMBER_OF}</field_member_of>
             <field_model>{$field_model}</field_model>
             <field_resource_type>{$field_resource_type}</field_resource_type>
-            <file>{$main_file}</file>
-            {
-                for $media in $associated_files
-                return
-                    element {concat('file_',lower-case($media/@ds_id/data()))} {$media/@filepath/data()}
-            }
         </record>
       
   }
