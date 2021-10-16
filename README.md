@@ -90,6 +90,8 @@ Attempts to compare Islandora Legacy XML to the JSON-LD output of Islandora (Dru
 ### ToDo
 
 * how to find mapping between UUID in Islandora Legacy and identifier in new Islandora
+  * investigate PathAuto URL Alias or Workbench URL Alias
+  * investigate Workbench output_csv as a source of the old/new mapping
 * hot to handle mappings where the new Islandora JSON LD returns a taxonomy ID where Islandora Legacy uses textual terms
 
 ## Testing
