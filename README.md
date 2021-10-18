@@ -76,16 +76,17 @@ Reference for the metadata conversion: [Islandora MIG](https://github.com/island
 
 * to check
 
-```bash
+``` bash
  python3 workbench --config ../workbench_config/workbench_config_test_02.yaml --check
- ````
+ ```
 
 ### Auditing: running the after Islandora Workbench import verification script
 
 Attempts to compare Islandora Legacy XML to the JSON-LD output of Islandora (Drupal 8+) node using the mappings defined by the [Islandora MIG](https://github.com/islandora-interest-groups/Islandora-Metadata-Interest-Group/wiki/MIG-MODS-to-RDF-Working-Documents) and with the document: [Islandora MIG (Metadata Interest Group) MODS-RDF Simplified Mapping](https://docs.google.com/spreadsheets/d/18u2qFJ014IIxlVpM3JXfDEFccwBZcoFsjbBGpvL0jJI/edit#gid=0)
 
-
-`python3 islandora_audit.py --id_list test_data/z --islandora_legacy https://example.com/ --islandora https://example_9.com/ --comparison_config test_data/comparison_config.sample.json`
+``` bash
+python3 islandora_audit.py --id_list test_data/z --islandora_legacy https://example.com/ --islandora https://example_9.com/ --comparison_config test_data/comparison_config.sample.json
+```
 
 ### ToDo
 

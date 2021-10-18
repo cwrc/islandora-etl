@@ -64,8 +64,9 @@ def lookup_legacy_mods(pid, session, args):
 # Lookup the JSON-LD on an Islandora (Drupal 8+) server
 def lookup_jsonld(pid, session, args):
     # get datastream content
+    # assumes PathAuto or URL alias using Islandora legacy URL
     response = session.get(
-        args.islandora + '/islandora/' + pid + '?_format=jsonld'
+        args.islandora + '/islandora/object/' + pid + '?_format=jsonld'
     )
     response.raise_for_status()
 
@@ -122,8 +123,7 @@ def main():
         print(pid)
 
         legacy_response = lookup_legacy_mods(pid, session_legacy, args)
-        # ToDo: how do the IDs map from Legacy to new?
-        pid = 'kingsgate-bc-delete'
+        # ToDo: how do the IDs map from Islandora Legacy to new?
         islandora_response = lookup_jsonld(pid, session_islandora, args)
         islandora_jsonld = json.loads(islandora_response.text)
 

@@ -45,6 +45,7 @@ declare variable $FIELD_MEMBER_OF external := "1";
     return
         <record>
             <id>{$id}</id>
+            <url_alias>/islandora/object/{$id}</url_alias>
             <title>{$title}</title>
             <field_member_of>{$FIELD_MEMBER_OF}</field_member_of>
             <field_model>{$field_model}</field_model>
