@@ -130,11 +130,15 @@ declare variable $FIELD_MEMBER_OF external := "1";
             <field_linked_agent>
             {
                 (: toDo: very simplistic; expand :)
-                for $mods_name in $metadata/resource_metadata/mods:mods/mods:name
+                for $mods_name at $pos in $metadata/resource_metadata/mods:mods/mods:name
                 let $role := "ive"
+                let $separator :=
+                  if ($pos > 1)
+                  then $tH:WORKBENCH_SEPARATOR
+                  else ""
                 return
-                  concat('relators:', $role, ":person:", string-join($mods_name/mods:namePart/text(), " ") )
-                  
+                  concat($separator, 'relators:', $role, ":person:", string-join($mods_name/mods:namePart/text(), " ") )
+                 
             }
             </field_linked_agent>
         </record>
