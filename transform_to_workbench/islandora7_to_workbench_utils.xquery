@@ -185,7 +185,7 @@ declare function th:get_edition($node as node()) as xs:string
 (: mods/language :)
 declare function th:get_langauge($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:language/text(), $th:WORKBENCH_SEPARATOR)
+    string-join($node/resource_metadata/mods:mods/mods:language/mods:languageTerm/text(), $th:WORKBENCH_SEPARATOR)
 };
 
 (: mods/physicalDescription/form :)
@@ -215,7 +215,7 @@ declare function th:get_digital_origin($node as node()) as xs:string
 (: mods/physicalDescription/note :)
 declare function th:get_physical_note($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:note/text(), $th:WORKBENCH_SEPARATOR)
+    string-join($node/resource_metadata/mods:mods/mods:physicalDescription/mods:note/text(), $th:WORKBENCH_SEPARATOR)
 };
 
 (: mods/physicalDescription/reformattingQuality :)

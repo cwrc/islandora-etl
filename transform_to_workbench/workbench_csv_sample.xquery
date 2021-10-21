@@ -45,6 +45,7 @@ declare variable $FIELD_MEMBER_OF external := "1";
     let $field_classification := tH:get_classification_other($metadata)
     let $field_coordinates := tH:get_subject_cartographic_coordinates($metadata)
     let $field_coordinates_text := tH:get_subject_cartographic_coordinates($metadata)
+    (:ToDo: what is the difference between field_description and field_description_long :)
     let $field_description := tH:get_physical_note($metadata)
     let $field_description_long := tH:get_physical_note($metadata)
     let $field_dewey_classification := tH:get_classification_ddc($metadata)
@@ -89,7 +90,7 @@ declare variable $FIELD_MEMBER_OF external := "1";
             <field_model>{$field_model}</field_model>
             <field_resource_type>{$field_resource_type}</field_resource_type>
 
-            <langcode>{$langcode}</langcode>
+            <langcode></langcode>
 
             <field_classification>{$field_classification}</field_classification>
             <field_coordinates>{$field_coordinates}</field_coordinates>
@@ -110,7 +111,6 @@ declare variable $FIELD_MEMBER_OF external := "1";
             <field_isbn>{$field_isbn}</field_isbn>
             <field_language>{$field_language}</field_language>
             <field_lcc_classification>{$field_lcc_classification}</field_lcc_classification>
-            <field_linked_agent></field_linked_agent>
             <field_local_identifier>{$field_local_identifier}</field_local_identifier>
             <field_main_banner></field_main_banner>
             <field_note>{$field_note}</field_note>
@@ -125,6 +125,18 @@ declare variable $FIELD_MEMBER_OF external := "1";
             <field_temporal_subject>{$field_temporal_subject}</field_temporal_subject>
             <field_weight></field_weight>
 
+            <file>{$main_file}</file>
+
+            <field_linked_agent>
+            {
+                (: toDo: very simplistic; expand :)
+                for $mods_name in $metadata/resource_metadata/mods:mods/mods:name
+                let $role := "ive"
+                return
+                  concat('relators:', $role, ":person:", string-join($mods_name/mods:namePart/text(), " ") )
+                  
+            }
+            </field_linked_agent>
         </record>
   }
 </csv>

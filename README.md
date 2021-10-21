@@ -45,7 +45,7 @@ python3 islandora7_export_2.py --id_list test_data/z --server ${ISLANDORA_LEGACY
 
 * results in the export directory
   * each Fedora 3 datastream extracted as a file (not in the exclusion list defined in the script)
-  * a combination of metadata combined into a single output file (metadata datastreams defined in the script) 
+  * a combination of metadata combined into a single output file (metadata datastreams defined in the script)
 
 ``` xml
 <metadata pid="" label="" owner="" created="" modified="">
@@ -76,7 +76,7 @@ A list of available fields can be discovered via the `--get_csv_template` option
 
 ### version alignment with configured Drupal fields
 
-* current commit aims for string type alignment with 
+* current commit aims for string type alignment with
   * "islandora/islandora_defaults": "dev-8.x-1.x#0d9a59a"
   * working towards: [Islandora MIG (Metadata Interest Group) MODS-RDF Simplified Mapping](https://docs.google.com/spreadsheets/d/18u2qFJ014IIxlVpM3JXfDEFccwBZcoFsjbBGpvL0jJI/edit#gid=0)
 
@@ -120,3 +120,18 @@ To run tests:
 Media files fail to load via Islandora Workbench (or via the Drupal UI)
 
 * check that the Drupal user has the `fedoraAdmin` role
+
+## Todo
+
+* linked agent:
+  * role not often specifed, will have to set manually? For each collection?
+
+* `<mods:typeOfResource>sound recording-nonmusical</mods:typeOfResource>`:
+  * where should this go? `field_resource_type` is this a special Islandora vocabulary?
+
+* `<mods:issuance>monographic</mods:issuance>`
+  * where?
+
+* recordInfo: need mapping
+
+* langcode?
