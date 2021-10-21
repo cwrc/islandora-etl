@@ -70,6 +70,16 @@ Reference for the metadata conversion: [Islandora MIG](https://github.com/island
   * create new database and import the `combined_metadata` directory contents produced by the `Exraction` step
   * run XQuery from the `Transformation` directory to transform XML metadata into a CSV for use with Islandora Workbench
 
+### How to find the Islandora fields available?
+
+A list of available fields can be discovered via the `--get_csv_template` option within [Islandora Workbench](https://mjordan.github.io/islandora_workbench_docs/csv_file_templates/). The fields available depends on combination of the Drupal config created either via the [Islandora defauls](https://github.com/Islandora/islandora_defaults) profile or config susequently added initial Drupal setup.
+
+### version alignment with configured Drupal fields
+
+* current commit aims for string type alignment with 
+  * "islandora/islandora_defaults": "dev-8.x-1.x#0d9a59a"
+  * working towards: [Islandora MIG (Metadata Interest Group) MODS-RDF Simplified Mapping](https://docs.google.com/spreadsheets/d/18u2qFJ014IIxlVpM3JXfDEFccwBZcoFsjbBGpvL0jJI/edit#gid=0)
+
 ## Loading to Islandora
 
 * Load via [Islandora Workbench](https://github.com/mjordan/islandora_workbench) using the CSV created during the the transformation section. See the Workbench documentation for details. A sample config is included in the `test_data` directory.
@@ -104,3 +114,9 @@ To run tests:
 ## Style
 
 `pycodestyle --show-source --show-pep8 --ignore=E402,W504 --max-line-length=200 .`
+
+## FAQ
+
+Media files fail to load via Islandora Workbench (or via the Drupal UI)
+
+* check that the Drupal user has the `fedoraAdmin` role
