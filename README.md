@@ -80,17 +80,41 @@ A list of available fields can be discovered via the `--get_csv_template` option
   * "islandora/islandora_defaults": "dev-8.x-1.x#0d9a59a"
   * working towards: [Islandora MIG (Metadata Interest Group) MODS-RDF Simplified Mapping](https://docs.google.com/spreadsheets/d/18u2qFJ014IIxlVpM3JXfDEFccwBZcoFsjbBGpvL0jJI/edit#gid=0)
 
+### How to specify parent collection?
+
+* [Creation of content and collection in the same CSV](https://mjordan.github.io/islandora_workbench_docs/paged_and_compound/#creating-collections-and-members-together)
+
+* the sample transform attempts to use the `parent_id` if the collection object is in the exported set in the previous set otherwise defaults to the specified `node_id` in the XQuery transform
+
+***Care needs to be taken with collections: otherwise resources can be added without a collection***
+
+2021-10-22: add some logic that attempts to order item in CSV by collection hierarchy: this only works if the items in the collection hierarchy are present and also not already in Islandora. Note: the `url_alias` should trigger a warning if one tries to add a collection that pre-exists.
+
+If items are added without a collection, the `output_csv` Islandora Workbench config will provide a way to update existing items (don't lose the file) assuming they have not changed via the UI.
+
+todo: flush out protential problem areas around the collection hierarchy and loading
 ## Loading to Islandora
 
 * Load via [Islandora Workbench](https://github.com/mjordan/islandora_workbench) using the CSV created during the the transformation section. See the Workbench documentation for details. A sample config is included in the `test_data` directory.
 
-* to check
+* to check that the CSV to import is valid
 
 ``` bash
  python3 workbench --config ../workbench_config/workbench_config_test_02.yaml --check
  ```
 
-### Auditing: running the after Islandora Workbench import verification script
+* to load, remove the `--check` parameter from the above
+
+``` bash
+ python3 workbench --config ../workbench_config/workbench_config_test_02.yaml 
+ ```
+
+More information:
+
+* [Workbench Fields](https://mjordan.github.io/islandora_workbench_docs/fields/)
+
+
+## Auditing: running the after Islandora Workbench import verification script
 
 Attempts to compare Islandora Legacy XML to the JSON-LD output of Islandora (Drupal 8+) node using the mappings defined by the [Islandora MIG](https://github.com/islandora-interest-groups/Islandora-Metadata-Interest-Group/wiki/MIG-MODS-to-RDF-Working-Documents) and with the document: [Islandora MIG (Metadata Interest Group) MODS-RDF Simplified Mapping](https://docs.google.com/spreadsheets/d/18u2qFJ014IIxlVpM3JXfDEFccwBZcoFsjbBGpvL0jJI/edit#gid=0)
 
@@ -128,6 +152,8 @@ Media files fail to load via Islandora Workbench (or via the Drupal UI)
 
 * `<mods:typeOfResource>sound recording-nonmusical</mods:typeOfResource>`:
   * where should this go? `field_resource_type` is this a special Islandora vocabulary?
+
+* `field_resource_type` and `field_model`: mapping via the Islandora Legacy cModel type to Islandora taxonomy terms -- is this correct?
 
 * `<mods:issuance>monographic</mods:issuance>`
   * where?

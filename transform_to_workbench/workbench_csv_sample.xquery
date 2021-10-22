@@ -2,6 +2,8 @@ xquery version "3.1" encoding "utf-8";
 
 import module namespace tH="transformationHelpers" at "islandora7_to_workbench_utils.xquery";
 
+declare namespace map = "http://www.w3.org/2005/xpath-functions/map";
+
 declare namespace mods = "http://www.loc.gov/mods/v3";
 declare namespace dc = "http://purl.org/dc/elements/1.1/";
 declare namespace fedora="info:fedora/fedora-system:def/relations-external#";
@@ -36,6 +38,8 @@ declare variable $FIELD_MEMBER_OF external := "1";
    
     let $cModel := tH:get_cModel($metadata)
     let $id := tH:get_id($metadata)
+    let $member_of := tH:get_member_of($metadata, $FIELD_MEMBER_OF)
+    let $collection_path := tH:get_collection_path($metadata, "")
     let $title := tH:get_title($metadata) 
     let $title_alt :=  tH:get_title_alt($metadata)
     let $field_model := tH:get_model_from_cModel($cModel)
@@ -80,13 +84,17 @@ declare variable $FIELD_MEMBER_OF external := "1";
     let $main_file := $metadata/media_exports/media[@ds_id/data() eq tH:get_main_file_from_cModel($cModel)]/@filepath/data()
     let $associated_files := $metadata/media_exports/media[@filepath/data() != $main_file or not(exists($main_file))]
 
+    (: list collections at the top of the CSV:)
+    order by map:get($member_of,"parent_id"), $collection_path
+
     return
         <record>
             <id>{$id}</id>
+            <parent_id>{map:get($member_of,"parent_id")}</parent_id>
+            <field_member_of>{map:get($member_of,"field_member_of")}</field_member_of>
             <url_alias>/islandora/object/{$id}</url_alias>
             <title>{$title}</title>
             <field_alternative_title>{$title_alt}</field_alternative_title>
-            <field_member_of>{$FIELD_MEMBER_OF}</field_member_of>
             <field_model>{$field_model}</field_model>
             <field_resource_type>{$field_resource_type}</field_resource_type>
 
