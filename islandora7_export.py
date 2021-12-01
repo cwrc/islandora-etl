@@ -31,6 +31,8 @@ def mimeType_ext_mapper(mimeType):
         return '.xml'
     elif (mimeType == 'text/xml'):
         return '.xml'
+    elif (mimeType == 'application/rdf+xml'):
+        return '.xml'
     else:
         return mimetypes.guess_extension(mimeType, strict=True)
 
