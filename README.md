@@ -145,6 +145,12 @@ Media files fail to load via Islandora Workbench (or via the Drupal UI)
 
 * check that the Drupal user has the `fedoraAdmin` role
 
+How to gather a set of PID from Islandora Legacy (Islandora 7)?
+
+* direct query to Solr is one way - the following outputs a list of PIDs contained within the collection plus the collection itself: 
+  * curl 'http://localhost:8080/solr/select?rows=999999&start=0&fl=PID&q=RELS_EXT_isMemberOfCollection_uri_ms:%22info:fedora/${collection_PID}%22%20OR%20PID:%22${collection_PID}%22&wt=csv&sort=PID+asc'
+
+
 ## Todo
 
 * linked agent:
