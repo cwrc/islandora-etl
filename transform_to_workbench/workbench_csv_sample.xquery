@@ -26,7 +26,7 @@ declare option output:csv "header=yes, separator=comma";
 (: :)
 
 
-declare variable $FIELD_MEMBER_OF external := "1";
+declare variable $FIELD_MEMBER_OF external := "";
 
 
 (: MAIN :)
@@ -137,8 +137,8 @@ declare variable $FIELD_MEMBER_OF external := "1";
 
             <field_linked_agent>
             {
-                (: toDo: very simplistic; expand :)
-                for $mods_name at $pos in $metadata/resource_metadata/mods:mods/mods:name
+                (: toDo: very simplistic; assumes mods:namePart contains text and in test; expand :)
+                for $mods_name at $pos in $metadata/resource_metadata/mods:mods/mods:name[exists(mods:namePart/text())]
                 let $role := "ive"
                 let $separator :=
                   if ($pos > 1)
