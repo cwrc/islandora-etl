@@ -64,7 +64,7 @@ declare function th:get_model_from_cModel($uri as xs:string) as xs:string
         case "info:fedora/cwrc:documentCModel" return "15"
         case "info:fedora/islandora:image" return "13"
         case "info:fedora/islandora:sp-audioCModel" return "Audio"
-        case "info:fedora/islandora:collection" return "23"
+        case "info:fedora/islandora:collectionCModel" return "Collection"
         default return "error"
 };
 
@@ -77,7 +77,7 @@ declare function th:get_type_from_cModel($uri as xs:string) as xs:string
         case "infor:fedora/islandora:image" return "25"
         case "info:fedora/islandora:sp-audioCModel" return "Sound"
         case "info:fedora/islandora:video" return "27"
-        case "info:fedora/islandora:collection" return "12"
+        case "info:fedora/islandora:collectionCModel" return "Collection"
         default return "error"
 };
 

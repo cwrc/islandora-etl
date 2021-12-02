@@ -13,17 +13,18 @@ declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
 declare option output:encoding "UTF-8";
 
+(: Uncomment to output as XML for the use case a XML to CSV conversion such as OxygenXML :)
 (:
 declare namespace saxon="http://saxon.sf.net/";
 declare option output:method    "xml";
 declare option output:indent    "yes";
 declare option saxon:output     "method=xml";
-
 :)
 
+(: CSV output method if XML tooling supports (e.g., basex.org) :)
 declare option output:method "csv";
 declare option output:csv "header=yes, separator=comma";
-(: :)
+
 
 
 declare variable $FIELD_MEMBER_OF external := "";
