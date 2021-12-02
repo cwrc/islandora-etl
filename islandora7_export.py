@@ -33,6 +33,8 @@ def mimeType_ext_mapper(mimeType):
         return '.xml'
     elif (mimeType == 'application/rdf+xml'):
         return '.xml'
+    elif (mimeType == 'video/x-matroska'):
+        return '.mkv'
     else:
         return mimetypes.guess_extension(mimeType, strict=True)
 
@@ -162,7 +164,11 @@ def process_object(pid, session, args, object_metadata):
 
         if datastream['dsid'] not in exclude_datastream_list:
             response = lookup_object_datastream(datastream['dsid'], pid, session, args)
-            filename = pid + '__' + datastream['dsid'] + mimeType_ext_mapper(datastream['mimeType'])
+            file_ext = mimeType_ext_mapper(datastream['mimeType'])
+            if (file_ext is None):
+                print(datastream)
+                print('[ERROR] missing extension [' + pid + '] ' + datastream['dsid'])
+            filename = pid + '__' + datastream['dsid'] + file_ext
             filepath = write_datastream(filename, pid, args, datastream['dsid'], response.content, export_media)
             metadata_record_filepath(export_media, filepath, datastream['dsid'])
             metadata_combined_add_datastream(export_metadata, datastream['dsid'], response.content)
