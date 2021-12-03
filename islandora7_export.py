@@ -20,6 +20,7 @@ exclude_datastream_list = [
 # List of XML datastreams to merge into a metadata document for transformation in another script
 include_metadata_datastreams = [
     'MODS',
+    'MODs',  # some object mistakenly use this datastream id
     'RELS-EXT',
     'WORKFLOW'
 ]
@@ -98,7 +99,7 @@ def write_datastream(filename, pid, args, ds_id, ds_content, export_media):
         os.makedirs(path)
     # Todo: don't use mime type guessing as doesn't work well with xml
     filepath = os.path.join(path, filename)
-    print(filepath)
+    #print(filepath)
     with open(filepath, 'wb') as file:
         file.write(ds_content)
 
@@ -169,6 +170,7 @@ def process_object(pid, session, args, object_metadata):
                 print(datastream)
                 print('[ERROR] missing extension [' + pid + '] ' + datastream['dsid'])
             filename = pid + '__' + datastream['dsid'] + file_ext
+            print("  [" + pid + "] adding dsid [" + datastream['dsid'] + "] " + datastream['mimeType'] + " " + filename)
             filepath = write_datastream(filename, pid, args, datastream['dsid'], response.content, export_media)
             metadata_record_filepath(export_media, filepath, datastream['dsid'])
             metadata_combined_add_datastream(export_metadata, datastream['dsid'], response.content)
