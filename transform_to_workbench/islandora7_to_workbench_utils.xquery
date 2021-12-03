@@ -135,7 +135,14 @@ declare function th:get_cModel($node as node()) as xs:string
 (: mods/titleInfo[not @type] :)
 declare function th:get_title($node as node()) as xs:string
 {
-    $node/resource_metadata/mods:mods/mods:titleInfo[not(@type)]/mods:title/text()
+    let $title := $node/resource_metadata/mods:mods/mods:titleInfo[not(@type)]/mods:title/text()
+    return
+      if (not(exists($title))) then (
+        fn:error(xs:QName('label'), concat('title/label required field is missing: ', th:get_id($node)))
+      )
+      else (
+        $title
+      )
 };
 
 (: mods/titleInfo[@type="translated" @xml:lang="[lang code]"] :)
