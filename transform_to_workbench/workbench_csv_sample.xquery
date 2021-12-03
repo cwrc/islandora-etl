@@ -43,8 +43,8 @@ declare variable $FIELD_MEMBER_OF external := "";
     let $collection_path := tH:get_collection_path($metadata, "")
     let $title := tH:get_title($metadata) 
     let $title_alt :=  tH:get_title_alt($metadata)
-    let $field_model := tH:get_model_from_cModel($cModel)
-    let $field_resource_type := tH:get_type_from_cModel($cModel)
+    let $field_model := tH:get_model_from_cModel($cModel, $id)
+    let $field_resource_type := tH:get_type_from_cModel($cModel, $id)
     let $langcode := tH:get_langauge($metadata)
 
     let $field_classification := tH:get_classification_other($metadata)
@@ -82,7 +82,7 @@ declare variable $FIELD_MEMBER_OF external := "";
     let $field_temporal_subject := tH:get_subject_temporal($metadata)
     (: let $field_weight := :)
 
-    let $main_file := $metadata/media_exports/media[@ds_id/data() eq tH:get_main_file_from_cModel($cModel)]/@filepath/data()
+    let $main_file := tH:get_main_file($metadata, $cModel, $id)
     let $associated_files := $metadata/media_exports/media[@filepath/data() != $main_file or not(exists($main_file))]
 
     (: list collections at the top of the CSV:)

@@ -14,11 +14,13 @@ declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
 declare variable $th:WORKBENCH_SEPARATOR as xs:string := "|";
 
+(::)
 declare function th:extract_member_of($node as node()) as xs:string
 {
     fn:substring-after($node/resource_metadata/rdf:RDF/rdf:Description/fedora:isMemberOfCollection/@rdf:resource/data(), "/")
 };
 
+(::)
 declare function th:get_parent_node($member_of as xs:string) as node()?
 {
     collection()/metadata/@pid[data()=$member_of]
@@ -43,6 +45,7 @@ declare function th:get_collection_path($node as node(), $path)
 {
     let $member_of := th:extract_member_of($node)
     let $parent_node := th:get_parent_node($member_of)
+
     return
         if (exists($member_of) and $member_of != "" and exists($parent_node) )
         then
@@ -52,14 +55,12 @@ declare function th:get_collection_path($node as node(), $path)
                 )
         else 
             $path
-  
-  
 };
 
 (: Islandora Model type :)
 (: ToDo: verify mapping; see missing cModels and Unknown return :)
 (: Can use ID or taxonomy term 10 or "Audio" :)
-declare function th:get_model_from_cModel($uri as xs:string) as xs:string
+declare function th:get_model_from_cModel($uri as xs:string, $id as xs:string) as xs:string
 {
     switch ($uri)
         case "info:fedora/islandora:collectionCModel"       return "Collection"
@@ -79,13 +80,15 @@ declare function th:get_model_from_cModel($uri as xs:string) as xs:string
         case "info:fedora/cwrc:documentCModel"              return "UNKNOWN"
         case "info:fedora/cwrc:documentTemplateCModel"      return "UNKNOWN"
         
-        default return "ERROR: not found"
+        default
+          return 
+            fn:error(xs:QName('Resource type'), concat('resource type field is missing: ', $id))
 };
 
 (: Islandora resource type :)
 (: ToDo: verify mapping; see missing cModels and Unknown return :)
 (: Can use ID or taxonomy term:)
-declare function th:get_type_from_cModel($uri as xs:string) as xs:string
+declare function th:get_type_from_cModel($uri as xs:string, $id as xs:string) as xs:string
 {
     switch ($uri)
         case "info:fedora/islandora:collectionCModel"       return "Collection"
@@ -105,31 +108,91 @@ declare function th:get_type_from_cModel($uri as xs:string) as xs:string
         case "info:fedora/cwrc:documentCModel"              return "UNKNOWN"
         case "info:fedora/cwrc:documentTemplateCModel"      return "UNKNOWN"
         
-        default return "ERROR: not found"
+        default
+          return 
+            fn:error(xs:QName('Resource type'), concat('resource type field is missing: ', $id))
 };
 
 
 (: ToDo: verify mapping :)
-(: ToDo: map from cModel to main file for Workbench :)
-declare function th:get_main_file_from_cModel($uri as xs:string) as xs:string
+(: ToDo: map from cModel to the main file field for Workbench :)
+declare function th:get_main_file_dsid_from_cModel($uri as xs:string, $id as xs:string) as item()*
 {
     switch ($uri)
-        case "info:fedora/cwrc:documentCModel" return "CWRC"
-        case "info:fedora/islandora:image"    return "OBJ"
-        case "info:fedora/islandora:sp-audioCModel" return "OBJ"
-        default return "error"
+        case "info:fedora/islandora:collectionCModel"       return ("")
+        case "info:fedora/islandora:sp_pdf"                 return ("OBJ","PDF")
+        case "info:fedora/islandora:bookCModel"             return ("OBJ","PDF") (::)
+        case "info:fedora/cwrc:documentCModel"      return ("CWRC")
+        case "info:fedora/islandora:image"          return ("OBJ")
+        case "info:fedora/islandora:sp-audioCModel" return ("OBJ")
+        case "info:fedora/islandora:sp_videoCModel"         return ("OBJ") 
+        default 
+          return 
+            fn:error(xs:QName('Main_file'), concat('Main file is missing: ', $id))
+};
+
+(::)
+declare function th:get_main_file_name($metadata as node(), $ds_id_array as item()*, $id as xs:string) as item()*
+{
+    let $main_file := $metadata/media_exports/media[@ds_id/data() eq $ds_id_array[1]]/@filepath/data()
+    return
+        if (exists($main_file) or empty($ds_id_array)) then (
+            $main_file
+        )
+        else (
+            th:get_main_file_name($metadata, subsequence($ds_id_array,2), $id) 
+        )
+};
+
+(: find the path to the main file; Todo: enhance for additional usecases where there is not a one-to-one mapping, if applicable :)
+declare function th:get_main_file($metadata as node(), $cModel as xs:string, $id as xs:string) as xs:string
+{
+    (: assume a collection doesn't have an attached file :)
+    switch ($cModel)
+        case "info:fedora/islandora:collectionCModel"
+            return ""
+        default 
+            return
+                let $ds_id_array := th:get_main_file_dsid_from_cModel($cModel,$id)
+                return
+                if (not(exists($ds_id_array)) or empty($ds_id_array)) then (
+                    fn:error(xs:QName('Main_file'), concat('Main file is dsid not found: ', $id))
+                )
+                else
+                    let $main_file := th:get_main_file_name($metadata, $ds_id_array, $id) 
+                    return
+                        if (not(exists($main_file))) then (
+                            fn:error(xs:QName('main_filename'), concat('main file name required field is missing: ', $id))
+                        )
+                        else (
+                            $main_file
+                        )
 };
 
 (::)
 declare function th:get_id($node as node()) as xs:string
 {
-    $node/@pid/data()
+    let $id := $node/@pid/data()
+    return
+      if (not(exists($id))) then (
+        fn:error(xs:QName('ID'), 'ID is missing: ')
+      )
+      else (
+        $id
+      )
 };
 
 (::)
 declare function th:get_cModel($node as node()) as xs:string
 {
-    $node/resource_metadata/rdf:RDF/rdf:Description/fedora-model:hasModel/@rdf:resource/data() 
+    let $cModel := $node/resource_metadata/rdf:RDF/rdf:Description/fedora-model:hasModel/@rdf:resource/data() 
+    return
+      if (not(exists($cModel))) then (
+        fn:error(xs:QName('cModel'), concat('cModel required field is missing: ', th:get_id($node)))
+      )
+      else (
+        $cModel
+      )
 };
 
 (: mods/titleInfo[not @type] :)
