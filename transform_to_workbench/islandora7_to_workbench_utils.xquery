@@ -56,29 +56,56 @@ declare function th:get_collection_path($node as node(), $path)
   
 };
 
-(: ToDo: verify mapping :)
+(: Islandora Model type :)
+(: ToDo: verify mapping; see missing cModels and Unknown return :)
 (: Can use ID or taxonomy term 10 or "Audio" :)
 declare function th:get_model_from_cModel($uri as xs:string) as xs:string
 {
     switch ($uri)
-        case "info:fedora/cwrc:documentCModel" return "15"
-        case "info:fedora/islandora:image" return "13"
-        case "info:fedora/islandora:sp-audioCModel" return "Audio"
-        case "info:fedora/islandora:collectionCModel" return "Collection"
-        default return "error"
+        case "info:fedora/islandora:collectionCModel"       return "Collection"
+        case "info:fedora/islandora:sp-audioCModel"         return "Audio"
+        case "info:fedora/islandora:sp_basic_image"         return "Image"
+        case "info:fedora/islandora:binaryObjectCModel"     return "Binary"
+        case "info:fedora/islandora:bookCModel"             return "Paged Content"
+        case "info:fedora/islandora:compoundCModel"         return "Compound Object"
+        case "info:fedora/islandora:sp_large_image_cmodel"  return "Image"
+        case "info:fedora/islandora:newspaperCModel"        return "Newspaper"
+        case "info:fedora/islandora:newspaperIssueCModel"   return "Publication Issue"
+        case "info:fedora/islandora:newspaperPageCModel"    return "Page"
+        case "info:fedora/islandora:pageCModel"             return "Page"
+        case "info:fedora/islandora:sp_pdf"                 return "Digital Document"
+        case "info:fedora/islandora:sp_videoCModel"         return "Video"
+        case "info:fedora/cwrc:citationCModel"              return "UNKNOWN"
+        case "info:fedora/cwrc:documentCModel"              return "UNKNOWN"
+        case "info:fedora/cwrc:documentTemplateCModel"      return "UNKNOWN"
+        
+        default return "ERROR: not found"
 };
 
-(: ToDo: verify mapping :)
+(: Islandora resource type :)
+(: ToDo: verify mapping; see missing cModels and Unknown return :)
 (: Can use ID or taxonomy term:)
 declare function th:get_type_from_cModel($uri as xs:string) as xs:string
 {
     switch ($uri)
-        case "info:fedora/cwrc:documentCModel" return "33"
-        case "infor:fedora/islandora:image" return "25"
-        case "info:fedora/islandora:sp-audioCModel" return "Sound"
-        case "info:fedora/islandora:video" return "27"
-        case "info:fedora/islandora:collectionCModel" return "Collection"
-        default return "error"
+        case "info:fedora/islandora:collectionCModel"       return "Collection"
+        case "info:fedora/islandora:sp-audioCModel"         return "Sound"
+        case "info:fedora/islandora:sp_basic_image"         return "Still Image"
+        case "info:fedora/islandora:binaryObjectCModel"     return "UNKNOWN"
+        case "info:fedora/islandora:bookCModel"             return "Collection"
+        case "info:fedora/islandora:compoundCModel"         return "Collection"
+        case "info:fedora/islandora:sp_large_image_cmodel"  return "Still Image"
+        case "info:fedora/islandora:newspaperCModel"        return "Collection"
+        case "info:fedora/islandora:newspaperIssueCModel"   return "Collection"
+        case "info:fedora/islandora:newspaperPageCModel"    return "Text"
+        case "info:fedora/islandora:pageCModel"             return "Text"
+        case "info:fedora/islandora:sp_pdf"                 return "UNKNOWN"
+        case "info:fedora/islandora:sp_videoCModel"         return "Moving Image"
+        case "info:fedora/cwrc:citationCModel"              return "UNKNOWN"
+        case "info:fedora/cwrc:documentCModel"              return "UNKNOWN"
+        case "info:fedora/cwrc:documentTemplateCModel"      return "UNKNOWN"
+        
+        default return "ERROR: not found"
 };
 
 

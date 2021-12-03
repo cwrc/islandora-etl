@@ -26,7 +26,7 @@ declare option output:method "csv";
 declare option output:csv "header=yes, separator=comma";
 
 
-
+(: CHANGE ME - ID of the default base collection :)
 declare variable $FIELD_MEMBER_OF external := "";
 
 
