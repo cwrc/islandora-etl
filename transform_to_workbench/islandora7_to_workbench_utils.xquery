@@ -123,9 +123,10 @@ declare function th:get_main_file_dsid_from_cModel($uri as xs:string, $id as xs:
         case "info:fedora/islandora:sp-audioCModel"         return ("OBJ")
         case "info:fedora/islandora:bookCModel"             return ("OBJ","PDF") (::)
         case "info:fedora/cwrc:documentCModel"              return ("CWRC")
-        case "info:fedora/islandora:pageCModel"             return ("Text")
+        case "info:fedora/islandora:pageCModel"             return ("OBJ")
         case "info:fedora/islandora:sp_pdf"                 return ("OBJ")
         case "info:fedora/islandora:sp_videoCModel"         return ("OBJ") 
+        case "info:fedora/cwrc:citationCModel"              return ("")
         default 
           return 
             fn:error(xs:QName('Main_file'), concat('Main file is missing: ', $id))
@@ -150,6 +151,8 @@ declare function th:get_main_file($metadata as node(), $cModel as xs:string, $id
     (: assume a collection doesn't have an attached file :)
     switch ($cModel)
         case "info:fedora/islandora:collectionCModel"
+            return ""
+        case "info:fedora/cwrc:citationCModel"
             return ""
         default 
             return
@@ -196,16 +199,16 @@ declare function th:get_cModel($node as node()) as xs:string
 };
 
 (: mods/titleInfo[not @type] :)
-declare function th:get_title($node as node()) as xs:string
+declare function th:get_title($node as node(), $cModel as xs:string) as xs:string
 {
     let $title := $node/resource_metadata/mods:mods/mods:titleInfo[not(@type)]/mods:title/text()
     return
-      if (not(exists($title))) then (
-        fn:error(xs:QName('label'), concat('title/label required field is missing: ', th:get_id($node)))
-      )
-      else (
+      if (exists($title)) then
         $title
-      )
+      else if ($cModel = "info:fedora/islandora:pageCModel") then 
+        $node/@label/data()
+      else
+        fn:error(xs:QName('label'), concat('title/label required field is missing: ', th:get_id($node)))
 };
 
 (: mods/titleInfo[@type="translated" @xml:lang="[lang code]"] :)
