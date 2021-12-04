@@ -36,6 +36,10 @@ def mimeType_ext_mapper(mimeType):
         return '.xml'
     elif (mimeType == 'video/x-matroska'):
         return '.mkv'
+    elif (mimeType == 'image/jpeg'):
+        return '.jpeg'
+    elif (mimeType == 'image/jp2'):
+        return '.jp2'
     else:
         return mimetypes.guess_extension(mimeType, strict=True)
 
