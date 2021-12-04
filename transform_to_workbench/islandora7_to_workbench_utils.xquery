@@ -120,11 +120,11 @@ declare function th:get_main_file_dsid_from_cModel($uri as xs:string, $id as xs:
 {
     switch ($uri)
         case "info:fedora/islandora:collectionCModel"       return ("")
-        case "info:fedora/islandora:sp_pdf"                 return ("OBJ","PDF")
+        case "info:fedora/islandora:sp-audioCModel"         return ("OBJ")
         case "info:fedora/islandora:bookCModel"             return ("OBJ","PDF") (::)
-        case "info:fedora/cwrc:documentCModel"      return ("CWRC")
-        case "info:fedora/islandora:image"          return ("OBJ")
-        case "info:fedora/islandora:sp-audioCModel" return ("OBJ")
+        case "info:fedora/cwrc:documentCModel"              return ("CWRC")
+        case "info:fedora/islandora:pageCModel"             return ("Text")
+        case "info:fedora/islandora:sp_pdf"                 return ("OBJ")
         case "info:fedora/islandora:sp_videoCModel"         return ("OBJ") 
         default 
           return 
