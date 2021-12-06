@@ -27,6 +27,7 @@ include_metadata_datastreams = [
 
 
 # Map mimeType from Islandora 7 to a file extention
+# Todo: refactor as the guess_extension is failing for an number of cases
 def mimeType_ext_mapper(mimeType):
     if (mimeType == 'application/xml'):
         return '.xml'
@@ -36,6 +37,8 @@ def mimeType_ext_mapper(mimeType):
         return '.xml'
     elif (mimeType == 'video/x-matroska'):
         return '.mkv'
+    elif (mimeType == 'audio/mpeg'):
+        return '.mp3'
     elif (mimeType == 'image/jpeg'):
         return '.jpeg'
     elif (mimeType == 'image/jp2'):
