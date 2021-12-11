@@ -1,5 +1,7 @@
 xquery version "3.1" encoding "utf-8";
 
+(: set of sample utilities to report element path and help with clean-up or information gathering :)
+
 declare namespace map = "http://www.w3.org/2005/xpath-functions/map";
 
 declare namespace mods = "http://www.loc.gov/mods/v3";
@@ -15,13 +17,13 @@ declare function local:element_path_to_nodes( $nodes as node()* ) as xs:string*
 
 (: to use fully qualified path: XQuery 3.0 comes with a path function: https://www.w3.org/TR/2011/WD-xpath-functions-30-20111213/#func-path :)
 
-(: return an xpath of element names :)
-declare function local:element_path_to_node( $node as node() ) as xs:string 
+(: return an xpath of element names with ability to exclude specific elements :)
+declare function local:element_path_to_node( $node as node(), $exclude_elm as xs:string* ) as xs:string 
 {
-  $node/concat('/',string-join(ancestor-or-self::*/name(.), '/'))
+  $node/concat('/',string-join(ancestor-or-self::*[not(name(.)=$exclude_elm)]/name(.), '/'))
 };
 
-(: return an xpath of element names plus attributes :)
+(: return an xpath of element names plus attributes with ability to exclude specific elments/attributes :)
 declare function local:element_attribute_path_to_node( $node as node(), $exclude_elm as xs:string*, $exclude_attr as xs:string* ) as xs:string 
 {
   let $path := 
@@ -62,7 +64,7 @@ let $start_node := //mods:mods
 (: for all items in the node set (and descendants), find the ancestor path in the form of /1/2/3 :)
 let $path_list := 
   for $x in $start_node/descendant-or-self::node()
-  (: return local:element_path_to_node($x) :)
+  (: return local:element_path_to_node($x, $exclude_elements) :)
   return local:element_attribute_path_to_node($x, $exclude_elements, $exclude_attributes)
 return distinct-values($path_list)
 
