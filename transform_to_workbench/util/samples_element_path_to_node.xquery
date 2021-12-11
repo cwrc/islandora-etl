@@ -50,14 +50,14 @@ local:element_path_to_node( (/metadata/media_exports)[1] )
 :)  
 
 
-(: update set of excluded elements :)
-let $exclude_attributes :=  ("created","modified")
-
 (: update set of excluded attributes :)
+let $exclude_attributes :=  ("xsi:schemaLocation","modified")
+
+(: update set of excluded elements :)
 let $exclude_elements :=  ("metadata")
 
 (: set starting node set:)
-let $start_node := /metadata/media_exports
+let $start_node := //mods:mods
 
 (: for all items in the node set (and descendants), find the ancestor path in the form of /1/2/3 :)
 let $path_list := 
