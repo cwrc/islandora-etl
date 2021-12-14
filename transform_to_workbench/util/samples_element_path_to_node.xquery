@@ -64,7 +64,10 @@ let $start_node := //mods:mods
 (: for all items in the node set (and descendants), find the ancestor path in the form of /1/2/3 :)
 let $path_list := 
   for $x in $start_node/descendant-or-self::node()
-  (: return local:element_path_to_node($x, $exclude_elements) :)
-  return local:element_attribute_path_to_node($x, $exclude_elements, $exclude_attributes)
+  (: $path := local:element_path_to_node($x, $exclude_elements) :)
+  let $path := local:element_attribute_path_to_node($x, $exclude_elements, $exclude_attributes)
+  order by $path
+  return $path
 return distinct-values($path_list)
+
 
