@@ -458,7 +458,11 @@ declare function th:get_subject_hierarchical_geographic($node as node()) as xs:s
 (: mods/subject/topic :)
 declare function th:get_subject_topic($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:subject/mods:topic/text(), $th:WORKBENCH_SEPARATOR)
+    let $list :=
+        for $item in $node/resource_metadata/mods:mods/mods:subject/mods:topic/text()
+        return concat("subject:", $item)
+    return
+        string-join($list, $th:WORKBENCH_SEPARATOR)
 };
 
 (: mods/subject/temporal :)
@@ -559,7 +563,11 @@ declare function th:get_identifier_local($node as node()) as xs:string
 (: mods/accessCondition :)
 declare function th:get_access_condition($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:accessCondition/text(), $th:WORKBENCH_SEPARATOR)
+    let $accessConditionList :=
+        for $a in $node/resource_metadata/mods:mods/mods:accessCondition
+        return string-join($a/descendant-or-self::*/text(),'')
+    return
+        string-join($accessConditionList, $th:WORKBENCH_SEPARATOR)
 };
 
 (: ToDo: :)
