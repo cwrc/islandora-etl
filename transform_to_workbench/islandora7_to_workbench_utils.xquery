@@ -57,6 +57,25 @@ declare function th:get_collection_path($node as node(), $path)
             $path
 };
 
+(: given a set, find all collection objects and return a mapping of the collection id and associated ancestor path :)
+declare function th:get_collection_path_map() as map(*)
+{
+         map:merge(
+             for $collection in collection()/metadata[resource_metadata/rdf:RDF/rdf:Description/fedora-model:hasModel/@rdf:resource/data() = "info:fedora/islandora:collectionCModel"]
+             return
+                 map { th:get_id($collection) : th:get_collection_path($collection, "") }
+         )
+};
+
+(: given a node, test if is a collection cModel :)
+declare function th:is_collectionCModel($uri as xs:string) as xs:boolean
+{
+    switch ($uri)
+        case "info:fedora/islandora:collectionCModel"       return true()
+        default                                             return false()
+};
+
+
 (: Islandora Model type :)
 (: ToDo: verify mapping; see missing cModels and Unknown return :)
 (: Can use ID or taxonomy term 10 or "Audio" :)
@@ -558,3 +577,4 @@ declare function th:get_access_condition($node as node()) as xs:string
 
 (: ToDo: :)
 (: recordInfo :)
+

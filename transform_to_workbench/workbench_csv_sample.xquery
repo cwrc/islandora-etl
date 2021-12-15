@@ -32,15 +32,20 @@ declare variable $FIELD_MEMBER_OF external := "";
 
 (: MAIN :)
 
+(: enhance speed by creating a map of collection paths outside of object loop :)
+let $collection_path_map := tH:get_collection_path_map()
+
+return
 <csv>
   {
 
     for $metadata in /metadata
    
     let $cModel := tH:get_cModel($metadata)
+    let $is_collection := tH:is_collectionCModel($cModel)
     let $id := tH:get_id($metadata)
     let $member_of := tH:get_member_of($metadata, $FIELD_MEMBER_OF)
-    let $collection_path := tH:get_collection_path($metadata, "")
+    let $collection_path := map:get($collection_path_map, $id)
     let $title := tH:get_title($metadata, $cModel)
     let $title_alt :=  tH:get_title_alt($metadata)
     let $field_model := tH:get_model_from_cModel($cModel, $id)
@@ -86,11 +91,12 @@ declare variable $FIELD_MEMBER_OF external := "";
     let $associated_files := $metadata/media_exports/media[@filepath/data() != $main_file or not(exists($main_file))]
 
     (: list collections at the top of the CSV:)
-    order by map:get($member_of,"parent_id"), $collection_path
+    order by $is_collection descending, map:get($member_of,"parent_id"), $collection_path
 
     return
         <record>
             <id>{$id}</id>
+            <collection_path>{$collection_path}</collection_path>
             <parent_id>{map:get($member_of,"parent_id")}</parent_id>
             <field_member_of>{map:get($member_of,"field_member_of")}</field_member_of>
             <url_alias>/islandora/object/{$id}</url_alias>
