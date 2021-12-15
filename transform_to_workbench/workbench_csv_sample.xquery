@@ -96,7 +96,6 @@ return
     return
         <record>
             <id>{$id}</id>
-            <collection_path>{$collection_path}</collection_path>
             <parent_id>{map:get($member_of,"parent_id")}</parent_id>
             <field_member_of>{map:get($member_of,"field_member_of")}</field_member_of>
             <url_alias>/islandora/object/{$id}</url_alias>
