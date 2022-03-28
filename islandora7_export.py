@@ -43,6 +43,8 @@ def mimeType_ext_mapper(mimeType):
         return '.jpeg'
     elif (mimeType == 'image/jp2'):
         return '.jp2'
+    elif (mimeType == 'image/tif'):
+        return '.tif'
     else:
         return mimetypes.guess_extension(mimeType, strict=True)
 
