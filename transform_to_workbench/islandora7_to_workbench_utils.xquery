@@ -151,6 +151,17 @@ declare function th:get_main_file_dsid_from_cModel($uri as xs:string, $id as xs:
             fn:error(xs:QName('Main_file'), concat('Main file is missing: ', $id))
 };
 
+(: map marcrelators text to term :)
+declare function th:get_marcrelator_term_from_text($role as xs:string) as xs:string
+{
+     switch ($role)
+        case "Author"       return ("aut")
+        case ""             return ("")
+        default 
+          return 
+            fn:error(xs:QName('Main_file'), concat('Marcrelator mapping missing: [', $role, ']'))   
+};
+
 (::)
 declare function th:get_main_file_name($metadata as node(), $ds_id_array as item()*, $id as xs:string) as item()*
 {
