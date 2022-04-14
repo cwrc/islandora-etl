@@ -8,7 +8,7 @@ import os
 import requests
 import xml.etree.cElementTree as etree
 from getpass import getpass
-from progress_bar import InitBar
+
 
 # List of datastream ids to exclude from the export
 exclude_datastream_list = [
