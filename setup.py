@@ -8,6 +8,6 @@ setup(
     description="A command-line tool that allows Exporting Islandora content.",
     url="https://github.com/cwrc/islandora7_export",
     license="The Unlicense",
-    install_requires=['requests>=2.22,<3', 'progress_bar'],
+    install_requires=['requests>=2.22,<3'],
     python_requires='>=3.6'
 )
