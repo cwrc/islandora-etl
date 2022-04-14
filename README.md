@@ -40,7 +40,7 @@ Add Python libraries -- system wide
   * `--export_dir` : directory to store the export package
 
 ``` bash
-python3 islandora7_export_2.py --id_list test_data/z --server ${ISLANDORA_LEGACY:-https://example.com} --export_dir /tmp/z/
+python3 islandora7_export.py --id_list test_data/z --server ${ISLANDORA_LEGACY:-https://example.com} --export_dir /tmp/z/
 ```
 
 * results in the export directory
