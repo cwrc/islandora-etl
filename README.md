@@ -129,6 +129,10 @@ python3 islandora_audit.py --id_list test_data/z --islandora_legacy https://exam
   * investigate Workbench output_csv as a source of the old/new mapping
 * hot to handle mappings where the new Islandora JSON LD returns a taxonomy ID where Islandora Legacy uses textual terms
 
+## How to gather a list of PIDs from a collection
+
+See the `islandora_search.py script`
+
 ## Testing
 
 To run tests:
