@@ -129,9 +129,15 @@ python3 islandora_audit.py --id_list test_data/z --islandora_legacy https://exam
   * investigate Workbench output_csv as a source of the old/new mapping
 * hot to handle mappings where the new Islandora JSON LD returns a taxonomy ID where Islandora Legacy uses textual terms
 
-## How to gather a list of PIDs from a collection
+## How to gather a list of PIDs from an Islandora Legacy (aka Islandora07) collection
+
+Purpose: to return a list all the direct members of a specified collection. As of 2022-04-19: It doesn't traverse the descendent collections of the specified collection.
 
 See the `islandora_search.py script`
+
+``` bash
+python3 islandora7_search.py --input_file input_file_listing_collection_PIDs --server https://cwrc.ca --output_file output_file_to_store_results 
+```
 
 ## Testing
 

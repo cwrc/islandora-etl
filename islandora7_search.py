@@ -1,10 +1,10 @@
 #!/user/bin/env python3
 #####
-# Query a Solr collection and return all direct members (not decendants).
+# Query a collection PID and return all direct members (not decendants).
 # Input a file of PIDs.
 # Output: one or more file of PIDs with a name containin the input PID as the suffix
 #
-# python3 islandora7_search.py --input_file /tmp/z --server https://example.ca --output_file /tmp/zz
+# python3 islandora7_search.py --input_file input_file_listing_collection_PIDs --server https://example.ca --output_file output_file_to_store_results 
 #
 #######
 
