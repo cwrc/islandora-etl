@@ -145,6 +145,8 @@ declare function th:get_main_file_dsid_from_cModel($uri as xs:string, $id as xs:
         case "info:fedora/islandora:pageCModel"             return ("OBJ")
         case "info:fedora/islandora:sp_pdf"                 return ("OBJ")
         case "info:fedora/islandora:sp_videoCModel"         return ("OBJ") 
+        case "info:fedora/islandora:sp_large_image_cmodel"  return ("OBJ")
+        case "info:fedora/islandora:sp-audioCModel"         return ("OBJ")
         case "info:fedora/cwrc:citationCModel"              return ("")
         default 
           return 
