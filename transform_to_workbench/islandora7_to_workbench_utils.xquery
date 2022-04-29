@@ -121,10 +121,10 @@ declare function th:get_type_from_cModel($uri as xs:string, $id as xs:string) as
         case "info:fedora/islandora:newspaperIssueCModel"   return "Collection"
         case "info:fedora/islandora:newspaperPageCModel"    return "Text"
         case "info:fedora/islandora:pageCModel"             return "Text"
-        case "info:fedora/islandora:sp_pdf"                 return "UNKNOWN"
+        case "info:fedora/islandora:sp_pdf"                 return "Text"
         case "info:fedora/islandora:sp_videoCModel"         return "Moving Image"
         case "info:fedora/cwrc:citationCModel"              return "UNKNOWN"
-        case "info:fedora/cwrc:documentCModel"              return "UNKNOWN"
+        case "info:fedora/cwrc:documentCModel"              return "Text"
         case "info:fedora/cwrc:documentTemplateCModel"      return "UNKNOWN"
         
         default
