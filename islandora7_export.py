@@ -8,6 +8,7 @@ import os
 import requests
 import xml.etree.cElementTree as etree
 from getpass import getpass
+from urllib.parse import urljoin
 
 
 # List of datastream ids to exclude from the export
@@ -69,7 +70,7 @@ def init_session(args):
     session.auth = (username, password)
 
     response = session.post(
-        args.server + 'rest/user/login',
+        urljoin(args.server, 'rest/user/login'),
         json={'username': username, 'password': password},
         headers={'Content-Type': 'application/json'}
     )
@@ -81,7 +82,7 @@ def init_session(args):
 #
 def lookup_object_description(pid, session, args):
     response = session.get(
-        args.server + 'islandora/rest/v1/object/' + pid
+        urljoin(args.server, 'islandora/rest/v1/object/' + pid)
     )
     response.raise_for_status()
     print(response.request.url)
@@ -93,7 +94,7 @@ def lookup_object_description(pid, session, args):
 def lookup_object_datastream(ds_id, pid, session, args):
     # get datastream content
     response = session.get(
-        args.server + 'islandora/rest/v1/object/' + pid.strip() + '/datastream/' + ds_id + '/?content=true'
+        urljoin(args.server, 'islandora/rest/v1/object/' + pid.strip() + '/datastream/' + ds_id + '/?content=true')
     )
     response.raise_for_status()
 
