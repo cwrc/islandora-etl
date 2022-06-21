@@ -22,8 +22,12 @@ exclude_datastream_list = [
 include_metadata_datastreams = [
     'MODS',
     'MODs',  # some object mistakenly use this datastream id
+    'DC',
     'RELS-EXT',
-    'WORKFLOW'
+    'WORKFLOW',
+    'PERSON', # entity: no mods
+    'PLACE', # entity: no mods
+    'ORGANIZATION' # entity: no mods
 ]
 
 
@@ -123,6 +127,9 @@ def metadata_combined_init(pid, object_metadata):
     etree.register_namespace('islandora', 'http://islandora.ca/ontology/relsext#')
     etree.register_namespace('fedora', 'info:fedora/fedora-system:def/relations-external#')
     etree.register_namespace('fedora-model', 'info:fedora/fedora-system:def/model#')
+    etree.register_namespace('tei', 'http://www.tei-c.org/ns/1.0')
+    etree.register_namespace('oai_dc', 'http://www.openarchives.org/OAI/2.0/oai_dc/')
+    etree.register_namespace('dc', 'http://purl.org/dc/elements/1.1/')
 
     # add root element
     export_root = etree.Element(
