@@ -107,12 +107,13 @@ declare function th:get_model_from_cModel($uri as xs:string, $id as xs:string) a
         case "info:fedora/islandora:sp_pdf"                 return "Digital Document"
         case "info:fedora/islandora:sp_videoCModel"         return "Video"
         case "info:fedora/cwrc:citationCModel"              return "UNKNOWN"
-        case "info:fedora/cwrc:documentCModel"              return "UNKNOWN"
+        case "info:fedora/cwrc:documentCModel"              return "Digital Document"
+        case "info:fedora/cwrc:dtocCModel"                  return "Digital Document"
         case "info:fedora/cwrc:documentTemplateCModel"      return "UNKNOWN"
         
         default
           return 
-            fn:error(xs:QName('Resource type'), concat('resource type field is missing: ', $id))
+            fn:error(xs:QName('Resource_type'), concat('resource type field is missing: ', $id))
 };
 
 (: Islandora resource type :)
@@ -136,6 +137,7 @@ declare function th:get_type_from_cModel($uri as xs:string, $id as xs:string) as
         case "info:fedora/islandora:sp_videoCModel"         return "Moving Image"
         case "info:fedora/cwrc:citationCModel"              return "UNKNOWN"
         case "info:fedora/cwrc:documentCModel"              return "Text"
+         case "info:fedora/cwrc:dtocCModel"                 return "Text"
         case "info:fedora/cwrc:documentTemplateCModel"      return "UNKNOWN"
         
         default
@@ -153,10 +155,12 @@ declare function th:get_main_file_dsid_from_cModel($uri as xs:string, $id as xs:
         case "info:fedora/islandora:sp-audioCModel"         return ("OBJ")
         case "info:fedora/islandora:bookCModel"             return ("OBJ","PDF","") (: ToDo: check if valid or if only "" necessary :)
         case "info:fedora/cwrc:documentCModel"              return ("CWRC")
+        case "info:fedora/cwrc:dtocCModel"                  return ("DTOC")
         case "info:fedora/islandora:pageCModel"             return ("OBJ")
         case "info:fedora/islandora:sp_pdf"                 return ("OBJ")
         case "info:fedora/islandora:sp_videoCModel"         return ("OBJ") 
         case "info:fedora/islandora:sp_large_image_cmodel"  return ("OBJ")
+        case "info:fedora/islandora:sp_basic_image"         return ("OBJ")
         case "info:fedora/islandora:sp-audioCModel"         return ("OBJ")
         case "info:fedora/cwrc:citationCModel"              return ("")
         default 
@@ -627,4 +631,3 @@ declare function th:get_access_condition($node as node()) as xs:string
 
 (: ToDo: :)
 (: recordInfo :)
-
