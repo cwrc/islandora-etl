@@ -88,11 +88,22 @@ A list of available fields can be discovered via the `--get_csv_template` option
 
 ***Care needs to be taken with collections: otherwise resources can be added without a collection***
 
+Collections need to appear before children/members in the workbench CSV (see [creating collections and members together](https://mjordan.github.io/islandora_workbench_docs/paged_and_compound/#creating-collections-and-members-together))
+
 2021-10-22: add some logic that attempts to order item in CSV by collection hierarchy: this only works if the items in the collection hierarchy are present and also not already in Islandora. Note: the `url_alias` should trigger a warning if one tries to add a collection that pre-exists.
 
-If items are added without a collection, the `output_csv` Islandora Workbench config will provide a way to update existing items (don't lose the file) assuming they have not changed via the UI.
+Each item should have either a `parent_id` (if parent collection referenced in the workbench CSV) or `field_member_of` (if parent collection pre-exist in Drupal). Note: if not, then resouces will float without a parent.  [Creating collections and members together](https://mjordan.github.io/islandora_workbench_docs/paged_and_compound/#creating-collections-and-members-together))
 
-todo: flush out protential problem areas around the collection hierarchy and loading
+* if collection preexists in Drupal, lookup the Drupal node id for the collection
+  * option 1: if workbench CSV contains collections meant to be the direct child of a pre-existing Drupal collection the add the Drupal node id to the `field_member_of` to all collections without a `parent_id`
+  * option 2: if the workbench CSV contains no collections then add the Drupal node id to each row
+* if the collection is added via the workbench CSV, the `parent_id` of the member should reference the `id` of the parent
+
+
+If items are added without a collection, the `output_csv` Islandora Workbench config will provide a way to update existing items (don't lose the file) assuming they have not changed via the UI. See Islandora Workbench documentation for details.
+
+todo: flesh out protential problem areas around the collection hierarchy and loading
+
 ## Loading to Islandora
 
 * Load via [Islandora Workbench](https://github.com/mjordan/islandora_workbench) using the CSV created during the the transformation section. See the Workbench documentation for details. A sample config is included in the `test_data` directory.
