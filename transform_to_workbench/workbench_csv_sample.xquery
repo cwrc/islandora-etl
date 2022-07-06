@@ -51,6 +51,7 @@ return
     let $field_model := tH:get_model_from_cModel($cModel, $id)
     let $field_resource_type := tH:get_type_from_cModel($cModel, $id)
     let $langcode := tH:get_langauge($metadata)
+    let $page_sequence_number := tH:get_page_sequence_number($metadata)
 
     let $field_classification := tH:get_classification_other($metadata)
     let $field_coordinates := tH:get_subject_cartographic_coordinates($metadata)
@@ -96,8 +97,9 @@ return
     return
         <record>
             <id>{$id}</id>
-            <parent_id>{map:get($member_of,"parent_id")}</parent_id>
             <field_member_of>{map:get($member_of,"field_member_of")}</field_member_of>
+            <parent_id>{map:get($member_of,"parent_id")}</parent_id>
+            <field_weight>{$page_sequence_number}</field_weight>
             <url_alias>/islandora/object/{$id}</url_alias>
             <title>{$title}</title>
             <field_alternative_title>{$title_alt}</field_alternative_title>

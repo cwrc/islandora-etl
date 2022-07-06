@@ -10,6 +10,7 @@ declare namespace dc = "http://purl.org/dc/elements/1.1/";
 declare namespace fedora="info:fedora/fedora-system:def/relations-external#";
 declare namespace fedora-model="info:fedora/fedora-system:def/model#";
 declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+declare namespace islandora="http://islandora.ca/ontology/relsext#";
 
 
 declare variable $th:WORKBENCH_SEPARATOR as xs:string := "|";
@@ -19,6 +20,13 @@ declare function th:extract_member_of($node as node()) as xs:string
 {
     fn:substring-after($node/resource_metadata/rdf:RDF/rdf:Description/fedora:isMemberOfCollection/@rdf:resource/data(), "/")
 };
+
+(::)
+declare function th:extract_parent_of_page($node as node()) as xs:string
+{
+    fn:substring-after($node/resource_metadata/rdf:RDF/rdf:Description/fedora:isMemberOf/@rdf:resource/data(), "/")
+};
+
 
 (::)
 declare function th:get_parent_node($member_of as xs:string) as node()?
@@ -32,9 +40,12 @@ declare function th:get_parent_node($member_of as xs:string) as node()?
 declare function th:get_member_of($node as node(), $default as xs:string) as map(*)
 {
     let $member_of := th:extract_member_of($node)
+    let $page_of := th:extract_parent_of_page($node)
     
     return
-        if (exists($member_of) and exists(collection()/metadata/@pid[data()=$member_of]) ) then
+        if (exists($page_of) and exists(collection()/metadata/@pid[data()=$page_of]) ) then
+            map { 'parent_id' : $page_of, 'field_member_of' : "" }
+        else if (exists($member_of) and exists(collection()/metadata/@pid[data()=$member_of]) ) then
             map { 'parent_id' : $member_of, 'field_member_of' : "" }
         else 
             map { 'parent_id' : "", 'field_member_of' : $default }
@@ -140,7 +151,7 @@ declare function th:get_main_file_dsid_from_cModel($uri as xs:string, $id as xs:
     switch ($uri)
         case "info:fedora/islandora:collectionCModel"       return ("")
         case "info:fedora/islandora:sp-audioCModel"         return ("OBJ")
-        case "info:fedora/islandora:bookCModel"             return ("OBJ","PDF") (::)
+        case "info:fedora/islandora:bookCModel"             return ("OBJ","PDF","") (: ToDo: check if valid or if only "" necessary :)
         case "info:fedora/cwrc:documentCModel"              return ("CWRC")
         case "info:fedora/islandora:pageCModel"             return ("OBJ")
         case "info:fedora/islandora:sp_pdf"                 return ("OBJ")
@@ -152,6 +163,18 @@ declare function th:get_main_file_dsid_from_cModel($uri as xs:string, $id as xs:
           return 
             fn:error(xs:QName('Main_file'), concat('Main file is missing: ', $id))
 };
+
+(: page of book sequence number :)
+declare function th:get_page_sequence_number($node as node()) as xs:string
+{
+    let $page_num := $node/resource_metadata/rdf:RDF/rdf:Description/islandora:isSequenceNumber/text()
+    return
+        if (exists($page_num)) then
+            $page_num
+        else
+            ""
+};
+
 
 (: map marcrelators text to term :)
 declare function th:get_marcrelator_term_from_text($role as xs:string) as xs:string
@@ -197,7 +220,13 @@ declare function th:get_main_file($metadata as node(), $cModel as xs:string, $id
                     let $main_file := th:get_main_file_name($metadata, $ds_id_array, $id) 
                     return
                         if (not(exists($main_file))) then (
-                            fn:error(xs:QName('main_filename'), concat('main file name required field is missing: ', $id))
+                            (: ToDo: verify assmption that bookCModel may or may not contain a file datastream :)
+                            if ($cModel = "info:fedora/islandora:bookCModel") then (
+                                ""
+                            )
+                            else (
+                                fn:error(xs:QName('main_filename'), concat('main file name required field is missing: ', $id))
+                            )
                         )
                         else (
                             $main_file
