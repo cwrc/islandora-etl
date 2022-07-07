@@ -31,7 +31,7 @@ declare function th:extract_parent_of_page($node as node()) as xs:string
 (::)
 declare function th:get_parent_node($member_of as xs:string) as node()?
 {
-    collection()/metadata/@pid[data()=$member_of]
+    collection()/metadata[@pid/data()=$member_of]
 };
 
 (: ToDo :)
@@ -71,11 +71,20 @@ declare function th:get_collection_path($node as node(), $path)
 (: given a set, find all collection objects and return a mapping of the collection id and associated ancestor path :)
 declare function th:get_collection_path_map() as map(*)
 {
-         map:merge(
-             for $collection in collection()/metadata[resource_metadata/rdf:RDF/rdf:Description/fedora-model:hasModel/@rdf:resource/data() = "info:fedora/islandora:collectionCModel"]
-             return
-                 map { th:get_id($collection) : th:get_collection_path($collection, "") }
-         )
+    map:merge(
+        for $collection in collection()/metadata[resource_metadata/rdf:RDF/rdf:Description/fedora-model:hasModel/@rdf:resource/data() = "info:fedora/islandora:collectionCModel"]
+        return
+            map { th:get_id($collection) : th:get_collection_path($collection, concat("/", th:get_id($collection))) }
+    )
+};
+
+(: given a node, test if is a collection cModel :)
+declare function th:is_book_or_compound($uri as xs:string) as xs:boolean
+{
+    switch ($uri)
+        case "info:fedora/islandora:bookCModel"       return true()
+        case "info:fedora/islandora:compoundCModel"   return true()
+        default                                       return false()
 };
 
 (: given a node, test if is a collection cModel :)
@@ -85,7 +94,6 @@ declare function th:is_collectionCModel($uri as xs:string) as xs:boolean
         case "info:fedora/islandora:collectionCModel"       return true()
         default                                             return false()
 };
-
 
 (: Islandora Model type :)
 (: ToDo: verify mapping; see missing cModels and Unknown return :)
@@ -113,7 +121,7 @@ declare function th:get_model_from_cModel($uri as xs:string, $id as xs:string) a
         
         default
           return 
-            fn:error(xs:QName('Resource_type'), concat('resource type field is missing: ', $id))
+            fn:error(xs:QName('Resource_model'), concat('resource type field is missing: ', $id))
 };
 
 (: Islandora resource type :)
@@ -142,7 +150,7 @@ declare function th:get_type_from_cModel($uri as xs:string, $id as xs:string) as
         
         default
           return 
-            fn:error(xs:QName('Resource type'), concat('resource type field is missing: ', $id))
+            fn:error(xs:QName('Resource_type'), concat('resource type field is missing: ', $id))
 };
 
 
@@ -188,7 +196,7 @@ declare function th:get_marcrelator_term_from_text($role as xs:string) as xs:str
         case ""             return ("")
         default 
           return 
-            fn:error(xs:QName('Main_file'), concat('Marcrelator mapping missing: [', $role, ']'))   
+            fn:error(xs:QName('marcrelator'), concat('Marcrelator mapping missing: [', $role, ']'))   
 };
 
 (::)

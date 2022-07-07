@@ -43,6 +43,7 @@ return
    
     let $cModel := tH:get_cModel($metadata)
     let $is_collection := tH:is_collectionCModel($cModel)
+    let $is_book_or_compound := tH:is_book_or_compound($cModel)
     let $id := tH:get_id($metadata)
     let $member_of := tH:get_member_of($metadata, $FIELD_MEMBER_OF)
     let $collection_path := map:get($collection_path_map, $id)
@@ -91,8 +92,8 @@ return
     let $main_file := tH:get_main_file($metadata, $cModel, $id)
     let $associated_files := $metadata/media_exports/media[@filepath/data() != $main_file or not(exists($main_file))]
 
-    (: list collections at the top of the CSV:)
-    order by $is_collection descending, map:get($member_of,"parent_id"), $collection_path
+    (: list collections at the top of the CSV (based on hierarchy/path of collection) followed by book/compound :)
+    order by $is_collection descending, $is_book_or_compound descending, $collection_path
 
     return
         <record>

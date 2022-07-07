@@ -92,78 +92,24 @@ return
     let $main_file := tH:get_main_file($metadata, $cModel, $id)
     let $associated_files := $metadata/media_exports/media[@filepath/data() != $main_file or not(exists($main_file))]
 
-    (: list collections at the top of the CSV (based on hierarchy/path of collection) followed by book/compound :)
+    (: list collections at the top of the CSV followed by book/compound :)
+    (: :)
     order by $is_collection descending, $is_book_or_compound descending, $collection_path
 
     return
         <record>
+            <a1>{$is_collection}</a1>
+            <a2>{$is_book_or_compound}</a2>            
+            <a3>{map:get($member_of,"parent_id")}</a3>
+            <a4>{$collection_path}</a4>
+            <a5>zzzzzzz</a5>
             <id>{$id}</id>
             <field_member_of>{map:get($member_of,"field_member_of")}</field_member_of>
             <parent_id>{map:get($member_of,"parent_id")}</parent_id>
             <field_weight>{$page_sequence_number}</field_weight>
             <url_alias>/islandora/object/{$id}</url_alias>
             <title>{$title}</title>
-            <field_alternative_title>{$title_alt}</field_alternative_title>
-            <field_model>{$field_model}</field_model>
-            <field_resource_type>{$field_resource_type}</field_resource_type>
-
-            <langcode></langcode>
-
-            <field_classification>{$field_classification}</field_classification>
-            <field_coordinates>{$field_coordinates}</field_coordinates>
-            <field_coordinates_text>{$field_coordinates_text}</field_coordinates_text>
-            <field_description>{$field_description}</field_description>
-            <field_description_long>{$field_description_long}</field_description_long>
-            <field_dewey_classification>{$field_dewey_classification}</field_dewey_classification>
-            <field_display_hints></field_display_hints>
-            <field_display_title></field_display_title>
-            <field_edition>{$field_edition}</field_edition>
-            <field_edtf_date>{$field_edtf_date}</field_edtf_date>
-            <field_edtf_date_created>{$field_edtf_date_created}</field_edtf_date_created>
-            <field_edtf_date_issued>{$field_edtf_date_issued}</field_edtf_date_issued>
-            <field_extent>{$field_extent}</field_extent>
-            <field_genre>{$field_genre}</field_genre>
-            <field_geographic_subject>{$field_geographic_subject}</field_geographic_subject>
-            <field_identifier>{$field_identifier}</field_identifier>
-            <field_isbn>{$field_isbn}</field_isbn>
-            <field_language>{$field_language}</field_language>
-            <field_lcc_classification>{$field_lcc_classification}</field_lcc_classification>
-            <field_local_identifier>{$field_local_identifier}</field_local_identifier>
-            <field_main_banner></field_main_banner>
-            <field_note>{$field_note}</field_note>
-            <field_oclc_number>{$field_oclc_number}</field_oclc_number>
-            <field_physical_form>{$field_physical_form}</field_physical_form>
-            <field_pid>{$field_pid}</field_pid>
-            <field_place_published>{$field_place_published}</field_place_published>
-            <field_rights>{$field_rights}</field_rights>
-            <field_subject>{$field_subject}</field_subject>
-            <field_subjects_name>{$field_subjects_name}</field_subjects_name>
-            <field_table_of_contents>{$field_table_of_contents}</field_table_of_contents>
-            <field_temporal_subject>{$field_temporal_subject}</field_temporal_subject>
-            <field_weight></field_weight>
-
-            <file>{$main_file}</file>
-
-            <field_linked_agent>
-            {
-                (: toDo: very simplistic; assumes mods:namePart contains text and in test; expand :)
-                for $mods_name at $pos in $metadata/resource_metadata/mods:mods/mods:name[exists(mods:namePart/text())]
-                let $role := 
-                    if ($mods_name/role)
-                    then
-                            for $role_node in $mods_name/role
-                            return tH:get_marcrelator_term_from_text($role_node/roleTerm/text())
-                    else 
-                        tH:get_marcrelator_term_from_text('Author')
-                let $separator :=
-                  if ($pos > 1)
-                  then $tH:WORKBENCH_SEPARATOR
-                  else ""
-                return
-                  concat($separator, 'relators:', $role, ":person:", string-join($mods_name/mods:namePart/text(), " ") )
-                 
-            }
-            </field_linked_agent>
+            
         </record>
   }
 </csv>
