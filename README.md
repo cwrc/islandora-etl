@@ -104,6 +104,13 @@ If items are added without a collection, the `output_csv` Islandora Workbench co
 
 todo: flesh out protential problem areas around the collection hierarchy and loading
 
+#### note: Islandora Workbench subdelimiter - using non-default
+
+Due to archival records containing the `|` character, the Islandora Workbench subdelimiter set to a custom value as the Workbench default is `|`. This requires updating 
+* [Workbench config](https://mjordan.github.io/islandora_workbench_docs/configuration/#input-csv-file-settings)
+* [the XQuery transform](https://github.com/cwrc/islandora-etl/blob/41ef5601a6e3673eb05d27a498499eb28e93617f/transform_to_workbench/islandora7_to_workbench_utils.xquery#L16)
+
+
 ## Loading to Islandora
 
 * Load via [Islandora Workbench](https://github.com/mjordan/islandora_workbench) using the CSV created during the the transformation section. See the Workbench documentation for details. A sample config is included in the `test_data` directory.

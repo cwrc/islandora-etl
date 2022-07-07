@@ -13,7 +13,9 @@ declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 declare namespace islandora="http://islandora.ca/ontology/relsext#";
 
 
-declare variable $th:WORKBENCH_SEPARATOR as xs:string := "|";
+(: change from default as default character used in text and there doesn't appear to be a way to escape
+https://mjordan.github.io/islandora_workbench_docs/configuration/#input-csv-file-settings :)
+declare variable $th:WORKBENCH_SEPARATOR as xs:string := "^|.|^";
 
 (::)
 declare function th:extract_member_of($node as node()) as xs:string
@@ -189,10 +191,12 @@ declare function th:get_page_sequence_number($node as node()) as xs:string
 
 
 (: map marcrelators text to term :)
+(: https://www.loc.gov/marc/relators/relaterm.html :)
 declare function th:get_marcrelator_term_from_text($role as xs:string) as xs:string
 {
      switch ($role)
         case "Author"       return ("aut")
+        case "Editor"       return ("edt")
         case ""             return ("")
         default 
           return 
