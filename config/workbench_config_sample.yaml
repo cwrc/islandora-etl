@@ -6,7 +6,7 @@ input_dir: test_data/
 input_csv: input.csv
 output_csv: output.csv
 
-subdelimiter: "^||^"
+subdelimiter: "^|.|^"
 
 allow_adding_terms: true
 allow_missing_files: true
