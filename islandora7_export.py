@@ -13,9 +13,25 @@ from urllib.parse import urljoin
 
 # List of datastream ids to exclude from the export
 exclude_datastream_list = [
-    'COLLECTION_POLICY',
-    #'OBJ',
-    #'PROXY_MP3'
+    'COLLECTION_POLICY'
+    # exclude the following if you want only the metadata
+    # 'COLLECTION_POLICY',
+    # 'OBJ',
+    # 'PROXY_MP3',
+    # 'TN',
+    # 'TECHMD',
+    # 'MEDIUM_SIZE',
+    # 'JPG',
+    # 'JP2',
+    # 'RELS-INT',
+    # 'PDF',
+    # 'OCR',
+    # 'HORC',
+    # 'PREVIEW',
+    # 'FULL_TEXT',
+    # 'OGG',
+    # 'MKV',
+    # 'MP4'
 ]
 
 # List of XML datastreams to merge into a metadata document for transformation in another script
