@@ -524,9 +524,25 @@ declare function th:get_subject_topic($node as node()) as xs:string
 };
 
 (: mods/subject/temporal :)
+(: needs to handle both a text plus a point="begin" and point="end" :)
 declare function th:get_subject_temporal($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:subject/mods:temporal/text(), $th:WORKBENCH_SEPARATOR)
+    let $list :=
+        $node/resource_metadata/mods:mods/mods:subject/mods:temporal
+    return 
+        if (exists($list[not(exists(@point))]))  then (
+            string-join($list/text(), $th:WORKBENCH_SEPARATOR)
+        )
+        else if  ($list[@point] and not($list[not(exists(@point))]))  then (
+            (: todo: verify assumtion order of point="begin" and point="end" in docs :)
+            string-join($list/text(), $th:ETDF_RANGE_SEPARATOR)
+        )
+        else if (not(exists($list))) then (
+            ""
+        )
+        else (
+            fn:error(xs:QName('subject_temporal'), concat('subject temporal combination not handled - report bug: ', th:get_id($node)))
+        )
 };
 
 (: mods/subject/name :)
