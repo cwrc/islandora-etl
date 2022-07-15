@@ -17,6 +17,9 @@ declare namespace islandora="http://islandora.ca/ontology/relsext#";
 https://mjordan.github.io/islandora_workbench_docs/configuration/#input-csv-file-settings :)
 declare variable $th:WORKBENCH_SEPARATOR as xs:string := "^|.|^";
 
+(: https://www.loc.gov/standards/datetime/ :)
+declare variable $th:EDTF_RANGE_SEPARATOR as xs:string := "^|.|^";
+
 (::)
 declare function th:extract_member_of($node as node()) as xs:string
 {
@@ -535,7 +538,7 @@ declare function th:get_subject_temporal($node as node()) as xs:string
         )
         else if  ($list[@point] and not($list[not(exists(@point))]))  then (
             (: todo: verify assumtion order of point="begin" and point="end" in docs :)
-            string-join($list/text(), $th:ETDF_RANGE_SEPARATOR)
+            string-join($list/text(), $th:EDTF_RANGE_SEPARATOR)
         )
         else if (not(exists($list))) then (
             ""
