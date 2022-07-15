@@ -26,7 +26,7 @@ exclude_datastream_list = [
     # 'RELS-INT',
     # 'PDF',
     # 'OCR',
-    # 'HORC',
+    # 'HOCR',
     # 'PREVIEW',
     # 'FULL_TEXT',
     # 'OGG',
