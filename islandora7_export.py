@@ -66,6 +66,10 @@ def mimeType_ext_mapper(mimeType):
         return '.jp2'
     elif (mimeType == 'image/tif'):
         return '.tif'
+    elif (mimeType == 'audio/ogg'):
+        return '.ogg'
+    elif (mimeType == 'video/x-m4v'):
+        return '.m4v'
     else:
         return mimetypes.guess_extension(mimeType, strict=True)
 
