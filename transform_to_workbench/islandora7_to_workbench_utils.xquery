@@ -289,7 +289,7 @@ declare function th:get_title($node as node(), $cModel as xs:string) as xs:strin
     return
       if (exists($title)) then
         $title
-      else if ($cModel = "info:fedora/islandora:pageCModel") then 
+      else if ($cModel = ("info:fedora/islandora:pageCModel", "info:fedora/islandora:collectionCModel") )  then
         $node/@label/data()
       else
         fn:error(xs:QName('label'), concat('title/label required field is missing: ', th:get_id($node)))
