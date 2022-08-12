@@ -195,3 +195,21 @@ How to gather a set of PID from Islandora Legacy (Islandora 7)?
 * recordInfo: need mapping
 
 * langcode?
+
+## useful queries
+
+List all models
+```
+for $i in /metadata/@models
+group by $i
+return $i
+```
+
+Lookup by PID
+```
+let $pid = "digitalpage:881e0ee6-52ed-4f05-9e8d-c5e51c5c1a31"
+for $i in /metadata[@pid=$pid]
+return $i
+```
+
+
