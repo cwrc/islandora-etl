@@ -38,8 +38,16 @@ let $collection_path_map := tH:get_collection_path_map()
 return
 <csv>
   {
-
-    for $metadata in /metadata
+    let $unsupported_models := (
+      "['cwrc:place-entityCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:person-entityCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:title-entityCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:organization-entityCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:documentCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:documentTemplateCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:schemaCModel', 'fedora-system:FedoraObject-3.0']"
+    )
+    for $metadata in /metadata[not(@models = $unsupported_models)]
    
     let $cModel := tH:get_cModel($metadata)
     let $is_collection := tH:is_collectionCModel($cModel)
