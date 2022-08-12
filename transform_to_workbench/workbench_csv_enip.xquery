@@ -43,7 +43,6 @@ return
       "['cwrc:person-entityCModel', 'fedora-system:FedoraObject-3.0']",
       "['cwrc:title-entityCModel', 'fedora-system:FedoraObject-3.0']",
       "['cwrc:organization-entityCModel', 'fedora-system:FedoraObject-3.0']",
-      "['cwrc:documentCModel', 'fedora-system:FedoraObject-3.0']",
       "['cwrc:documentTemplateCModel', 'fedora-system:FedoraObject-3.0']",
       "['cwrc:schemaCModel', 'fedora-system:FedoraObject-3.0']"
     )
