@@ -113,21 +113,38 @@ declare function th:get_model_from_cModel($uri as xs:string, $id as xs:string) a
         case "info:fedora/islandora:collectionCModel"       return "Collection"
         case "info:fedora/islandora:sp-audioCModel"         return "Audio"
         case "info:fedora/islandora:sp_basic_image"         return "Image"
+        case "info:fedora/islandora:sp_large_image_cmodel"  return "Image"
+        case "info:fedora/islandora:sp_pdf"                 return "Digital Document"
+        case "info:fedora/islandora:sp_videoCModel"         return "Video"
         case "info:fedora/islandora:binaryObjectCModel"     return "Binary"
         case "info:fedora/islandora:bookCModel"             return "Paged Content"
         case "info:fedora/islandora:compoundCModel"         return "Compound Object"
-        case "info:fedora/islandora:sp_large_image_cmodel"  return "Image"
         case "info:fedora/islandora:newspaperCModel"        return "Newspaper"
         case "info:fedora/islandora:newspaperIssueCModel"   return "Publication Issue"
         case "info:fedora/islandora:newspaperPageCModel"    return "Page"
         case "info:fedora/islandora:pageCModel"             return "Page"
-        case "info:fedora/islandora:sp_pdf"                 return "Digital Document"
-        case "info:fedora/islandora:sp_videoCModel"         return "Video"
         case "info:fedora/cwrc:citationCModel"              return "UNKNOWN"
         case "info:fedora/cwrc:documentCModel"              return "Digital Document"
         case "info:fedora/cwrc:dtocCModel"                  return "Digital Document"
         case "info:fedora/cwrc:documentTemplateCModel"      return "UNKNOWN"
-        
+        case "info:fedora/cwrc:place-entityCModel"          return "UNKNOWN"
+        case "info:fedora/cwrc:person-entityCModel"         return "UNKNOWN"
+        case "info:fedora/cwrc:organization-entityCModel"   return "UNKNOWN"
+        case "info:fedora/cwrc:title-entityCModel"          return "UNKNOWN"
+        case "info:fedora/cwrc:schemaCModel"                return "UNKNOWN"
+        case "info:fedora/islandora:tei-rdfCModel"          return "UNKNOWN"
+        case "info:fedora/islandora:versionCModel"          return "UNKNOWN"
+        case "info:fedora/islandora:transcriptionCModel"    return "UNKNOWN"
+        case "info:fedora/ir:citationCModel"                return "UNKNOWN"
+        case "info:fedora/islandora:sp_html_snippet"        return "UNKNOWN"
+        case "info:fedora/islandora:OACCModel"              return "UNKNOWN"
+        case "info:fedora/islandora:criticalEditionCModelPage" return "UNKNOWN"
+        case "info:fedora/islandora:criticalEditionContainerCModel" return "UNKNOWN"
+        case "info:fedora/islandora:criticalEditionCModel"  return "UNKNOWN"
+        case "info:fedora/islandora:digitalusCModel"        return "UNKNOWN"
+        case "info:fedora/islandora:markupeditorschemaCModel" return "UNKNOWN"
+        case "info:fedora/islandora:eventCModel"            return "UNKNOWN"
+
         default
           return 
             fn:error(xs:QName('Resource_model'), concat('resource type field is missing: ', $id))
@@ -142,21 +159,38 @@ declare function th:get_type_from_cModel($uri as xs:string, $id as xs:string) as
         case "info:fedora/islandora:collectionCModel"       return "Collection"
         case "info:fedora/islandora:sp-audioCModel"         return "Sound"
         case "info:fedora/islandora:sp_basic_image"         return "Still Image"
+        case "info:fedora/islandora:sp_large_image_cmodel"  return "Still Image"
+        case "info:fedora/islandora:sp_pdf"                 return "Text"
+        case "info:fedora/islandora:sp_videoCModel"         return "Moving Image"
         case "info:fedora/islandora:binaryObjectCModel"     return "UNKNOWN"
         case "info:fedora/islandora:bookCModel"             return "Collection"
         case "info:fedora/islandora:compoundCModel"         return "Collection"
-        case "info:fedora/islandora:sp_large_image_cmodel"  return "Still Image"
         case "info:fedora/islandora:newspaperCModel"        return "Collection"
         case "info:fedora/islandora:newspaperIssueCModel"   return "Collection"
         case "info:fedora/islandora:newspaperPageCModel"    return "Text"
         case "info:fedora/islandora:pageCModel"             return "Text"
-        case "info:fedora/islandora:sp_pdf"                 return "Text"
-        case "info:fedora/islandora:sp_videoCModel"         return "Moving Image"
         case "info:fedora/cwrc:citationCModel"              return "UNKNOWN"
         case "info:fedora/cwrc:documentCModel"              return "Text"
-         case "info:fedora/cwrc:dtocCModel"                 return "Text"
+        case "info:fedora/cwrc:dtocCModel"                  return "Text"
         case "info:fedora/cwrc:documentTemplateCModel"      return "UNKNOWN"
-        
+        case "info:fedora/cwrc:place-entityCModel"          return "UNKNOWN"
+        case "info:fedora/cwrc:person-entityCModel"         return "UNKNOWN"
+        case "info:fedora/cwrc:organization-entityCModel"   return "UNKNOWN"
+        case "info:fedora/cwrc:title-entityCModel"          return "UNKNOWN"
+        case "info:fedora/cwrc:schemaCModel"                return "UNKNOWN"
+        case "info:fedora/islandora:tei-rdfCModel"          return "UNKNOWN"
+        case "info:fedora/islandora:versionCModel"          return "UNKNOWN"
+        case "info:fedora/islandora:transcriptionCModel"    return "UNKNOWN"
+        case "info:fedora/ir:citationCModel"                return "UNKNOWN"
+        case "info:fedora/islandora:sp_html_snippet"        return "UNKNOWN"
+        case "info:fedora/islandora:OACCModel"              return "UNKNOWN"
+        case "info:fedora/islandora:criticalEditionCModelPage" return "UNKNOWN"
+        case "info:fedora/islandora:criticalEditionContainerCModel" return "UNKNOWN"
+        case "info:fedora/islandora:criticalEditionCModel"  return "UNKNOWN"
+        case "info:fedora/islandora:digitalusCModel"        return "UNKNOWN"
+        case "info:fedora/islandora:markupeditorschemaCModel" return "UNKNOWN"
+        case "info:fedora/islandora:eventCModel"            return "UNKNOWN"
+
         default
           return 
             fn:error(xs:QName('Resource_type'), concat('resource type field is missing: ', $id))
@@ -285,11 +319,11 @@ declare function th:get_cModel($node as node()) as xs:string
 (: mods/titleInfo[not @type] :)
 declare function th:get_title($node as node(), $cModel as xs:string) as xs:string
 {
-    let $title := $node/resource_metadata/mods:mods/mods:titleInfo[not(@type)]/mods:title/text()
+    let $title := $node/resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:titleInfo[not(@type)]/mods:title/text()
     return
       if (exists($title)) then
         $title
-      else if ($cModel = ("info:fedora/islandora:pageCModel", "info:fedora/islandora:collectionCModel") )  then
+      else if ($cModel = ("info:fedora/islandora:pageCModel", "info:fedora/islandora:collectionCModel", "info:fedora/islandora:criticalEditionCModelPage", "info:fedora/islandora:tei-rdfCModel", "info:fedora/islandora:transcriptionCModel") )  then
         $node/@label/data()
       else
         fn:error(xs:QName('label'), concat('title/label required field is missing: ', th:get_id($node)))
