@@ -38,6 +38,7 @@ exclude_datastream_list = [
 include_metadata_datastreams = [
     'MODS',
     'MODs',  # some object mistakenly use this datastream id
+    'CustomMODS',  # some object mistakenly use this datastream id
     'DC',
     'RELS-EXT',
     'WORKFLOW',
