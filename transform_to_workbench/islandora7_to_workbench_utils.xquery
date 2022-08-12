@@ -23,7 +23,11 @@ declare variable $th:EDTF_RANGE_SEPARATOR as xs:string := "^|.|^";
 (::)
 declare function th:extract_member_of($node as node()) as xs:string
 {
-    fn:substring-after($node/resource_metadata/rdf:RDF/rdf:Description/fedora:isMemberOfCollection/@rdf:resource/data(), "/")
+    let $list :=
+        for $item in $node/resource_metadata/rdf:RDF/rdf:Description/fedora:isMemberOfCollection/@rdf:resource/data()
+        return fn:substring-after($item, "/")
+    return
+        string-join($list, $th:WORKBENCH_SEPARATOR)
 };
 
 (::)
