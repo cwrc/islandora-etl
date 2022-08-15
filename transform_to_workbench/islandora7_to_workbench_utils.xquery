@@ -33,7 +33,11 @@ declare function th:extract_member_of($node as node()) as xs:string
 (::)
 declare function th:extract_parent_of_page($node as node()) as xs:string
 {
-    fn:substring-after($node/resource_metadata/rdf:RDF/rdf:Description/fedora:isMemberOf/@rdf:resource/data(), "/")
+    let $list :=
+        for $item in $node/resource_metadata/rdf:RDF/rdf:Description/fedora:isMemberOf/@rdf:resource/data()
+        return fn:substring-after($item, "/")
+    return
+        string-join($list, $th:WORKBENCH_SEPARATOR)
 };
 
 
