@@ -18,7 +18,7 @@ https://mjordan.github.io/islandora_workbench_docs/configuration/#input-csv-file
 declare variable $th:WORKBENCH_SEPARATOR as xs:string := "^|.|^";
 
 (: https://www.loc.gov/standards/datetime/ :)
-declare variable $th:EDTF_RANGE_SEPARATOR as xs:string := "^|.|^";
+declare variable $th:EDTF_RANGE_SEPARATOR as xs:string := "/";
 
 (::)
 declare function th:extract_member_of($node as node()) as xs:string
@@ -561,21 +561,44 @@ declare function th:get_subject_topic($node as node()) as xs:string
 declare function th:get_subject_temporal($node as node()) as xs:string
 {
     let $list :=
-        $node/resource_metadata/mods:mods/mods:subject/mods:temporal
+        $node/resource_metadata/mods:mods/mods:subject/mods:temporal[exists(text())]
+    let $cnt := count($list)
+    let $tmp := 
+        for $item at $i in $list
+        let $start_str :=
+            if ($i > 1 and not($item[@point = ["end"]]) ) then (
+                $th:WORKBENCH_SEPARATOR
+            )
+            else (
+                ""
+            )
+        let $item_str :=
+            if ($item[@point = ["start"]]) then (
+                (: handle case where two consecutive "start" point attributes - assume start then end ordering  :)
+                if ($list[$i+1]/@point/data() = "start" or $i = $cnt)  then (
+                    $item/text()
+                ) 
+                else (
+                    concat($item/text(), $th:EDTF_RANGE_SEPARATOR)
+                )
+            )
+            else if ($item[@point = ["end"]]) then (
+                if ($i > 1 and $list[$i - 1]/@point/data() = "start")  then (
+                    $item/text()
+                ) 
+                else (
+                    concat($th:EDTF_RANGE_SEPARATOR, $item/text())
+                )
+            )
+            else (
+                if (exists($item/text())) then
+                    $item/text()
+            )
+        return
+            concat($start_str, $item_str)
     return 
-        if (exists($list[not(exists(@point))]))  then (
-            string-join($list/text(), $th:WORKBENCH_SEPARATOR)
-        )
-        else if  ($list[@point] and not($list[not(exists(@point))]))  then (
-            (: todo: verify assumtion order of point="begin" and point="end" in docs :)
-            string-join($list/text(), $th:EDTF_RANGE_SEPARATOR)
-        )
-        else if (not(exists($list))) then (
-            ""
-        )
-        else (
-            fn:error(xs:QName('subject_temporal'), concat('subject temporal combination not handled - report bug: ', th:get_id($node)))
-        )
+        string-join($tmp, "")
+
 };
 
 (: mods/subject/name :)
