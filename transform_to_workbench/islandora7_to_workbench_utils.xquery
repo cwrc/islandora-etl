@@ -394,7 +394,26 @@ declare function th:get_date_copyright($node as node()) as xs:string
 (: mods/originInfo/dateOther :)
 declare function th:get_date_other($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:originInfo/mods:dateOther/text(), $th:WORKBENCH_SEPARATOR)
+    (: assume no point `end` without a point `start` - verified in data :)
+    (: two items have a point `start` without a point `end` -- these may have a trailing `/` :)
+    let $list := $node/resource_metadata/mods:mods/mods:originInfo/mods:dateOther
+    let $cnt := count($list)
+    let $tmp :=
+        for $item at $i in $list
+            let $wb_separator :=
+                if ($i < $cnt and ($list[$i + 1]/@point = "end" or $list[$i + 1]/@type = "end") ) then (
+                    $th:EDTF_RANGE_SEPARATOR
+                )
+                else if ($i < $cnt) then (
+                    $th:WORKBENCH_SEPARATOR
+                )
+                else (
+                    ""
+                )
+        return
+            concat($item/text(), $wb_separator)
+    return
+        string-join($tmp, "")
 };
 
 (: mods/originInfo/publisher :)
