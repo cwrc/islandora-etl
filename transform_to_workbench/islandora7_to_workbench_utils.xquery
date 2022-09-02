@@ -397,21 +397,51 @@ declare function th:get_date_other($node as node()) as xs:string
     (: assume no point `end` without a point `start` - verified in data :)
     (: two items have a point `start` without a point `end` -- these may have a trailing `/` :)
     let $list := $node/resource_metadata/mods:mods/mods:originInfo/mods:dateOther
+    return
+        th:generic_date($list)
+};
+
+(: generic date handler :)
+declare function th:generic_date($list as element()*) as xs:string
+{
     let $cnt := count($list)
     let $tmp :=
         for $item at $i in $list
             let $wb_separator :=
-                if ($i < $cnt and ($list[$i + 1]/@point = "end" or $list[$i + 1]/@type = "end") ) then (
-                    $th:EDTF_RANGE_SEPARATOR
-                )
-                else if ($i < $cnt) then (
-                    $th:WORKBENCH_SEPARATOR
-                )
-                else (
+                if (
+                        $i < $cnt 
+                        and ($list/@point = "start" or $list/@type = "start") 
+                        and ($list[$i + 1]/@point = "end" or $list[$i + 1]/@type = "end")
+                    )
+                then (
+                    (: range with begin and end - no workbench separator :)
                     ""
                 )
+                else if ($i = $cnt) then (
+                    ""
+                )
+                else (
+                    $th:WORKBENCH_SEPARATOR
+                )
+            let $edtf := $item/text()
+            let $wb_content :=
+                if ( ($item/@point = "start" or $item/@type = "start") ) then (
+                    (: range with begin and end :)
+                    concat($edtf, $th:EDTF_RANGE_SEPARATOR)
+                )
+                else if (
+                        ($item/@point = "end" or $item/@type = "end") 
+                        and ($i = 0 or not($list[$i - 1]/@point = "start" or $list[$i - 1]/@type = "start"))
+                        )
+                then (
+                    (: open range end with no begin :)
+                    concat($th:EDTF_RANGE_SEPARATOR, $edtf)
+                )
+                else (
+                    $edtf 
+                )
         return
-            concat($item/text(), $wb_separator)
+            concat($wb_content, $wb_separator)
     return
         string-join($tmp, "")
 };
@@ -581,43 +611,8 @@ declare function th:get_subject_temporal($node as node()) as xs:string
 {
     let $list :=
         $node/resource_metadata/mods:mods/mods:subject/mods:temporal[exists(text())]
-    let $cnt := count($list)
-    let $tmp := 
-        for $item at $i in $list
-        let $start_str :=
-            if ($i > 1 and not($item[@point = ["end"]]) ) then (
-                $th:WORKBENCH_SEPARATOR
-            )
-            else (
-                ""
-            )
-        let $item_str :=
-            if ($item[@point = ["start"]]) then (
-                (: handle case where two consecutive "start" point attributes - assume start then end ordering  :)
-                if ($list[$i+1]/@point/data() = "start" or $i = $cnt)  then (
-                    $item/text()
-                ) 
-                else (
-                    concat($item/text(), $th:EDTF_RANGE_SEPARATOR)
-                )
-            )
-            else if ($item[@point = ["end"]]) then (
-                if ($i > 1 and $list[$i - 1]/@point/data() = "start")  then (
-                    $item/text()
-                ) 
-                else (
-                    concat($th:EDTF_RANGE_SEPARATOR, $item/text())
-                )
-            )
-            else (
-                if (exists($item/text())) then
-                    $item/text()
-            )
-        return
-            concat($start_str, $item_str)
     return 
-        string-join($tmp, "")
-
+        th:generic_date($list) 
 };
 
 (: mods/subject/name :)
