@@ -358,37 +358,49 @@ declare function th:get_genre($node as node()) as xs:string
 (: mods/originInfo/dateIssued :)
 declare function th:get_date_issued($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:originInfo/mods:dateIssued/text(), $th:WORKBENCH_SEPARATOR)
+    let $list := $node/resource_metadata/mods:mods/mods:originInfo/mods:dateIssued
+    return
+        th:generic_date($list)
 };
 
 (: mods/originInfo/dateCreated :)
 declare function th:get_date_created($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:originInfo/mods:dateCreated/text(), $th:WORKBENCH_SEPARATOR)
+    let $list := $node/resource_metadata/mods:mods/mods:originInfo/mods:dateCreated
+    return
+        th:generic_date($list)
 };
 
 (: mods/originInfo/dateValid :)
 declare function th:get_date_valid($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:originInfo/mods:dateValid/text(), $th:WORKBENCH_SEPARATOR)
+    let $list := $node/resource_metadata/mods:mods/mods:originInfo/mods:dateValid
+    return
+        th:generic_date($list)
 };
 
 (: mods/originInfo/dateCaptured :)
 declare function th:get_date_captured($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:originInfo/mods:dateValid/text(), $th:WORKBENCH_SEPARATOR)
+    let $list := $node/resource_metadata/mods:mods/mods:originInfo/mods:dateCaptured
+    return
+        th:generic_date($list)
 };
 
 (: mods/originInfo/dateModified :)
 declare function th:get_date_modified($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:originInfo/mods:dateModified/text(), $th:WORKBENCH_SEPARATOR)
+    let $list := $node/resource_metadata/mods:mods/mods:originInfo/mods:dateModified
+    return
+        th:generic_date($list)
 };
 
 (: mods/originInfo/copyrightDate :)
 declare function th:get_date_copyright($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:originInfo/mods:copyrightDate/text(), $th:WORKBENCH_SEPARATOR)
+    let $list := $node/resource_metadata/mods:mods/mods:originInfo/mods:copyrightDate
+    return
+        th:generic_date($list)
 };
 
 (: mods/originInfo/dateOther :)
