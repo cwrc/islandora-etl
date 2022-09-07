@@ -131,6 +131,10 @@ More information:
 
 * [Workbench Fields](https://mjordan.github.io/islandora_workbench_docs/fields/)
 
+### Note: to verify EDTF dates (faster than Islandora Workbench --check)
+
+[verify_edtf_date_in_csv.py](transform_to_workbench/util/verify_edtf_date_in_csv.py)
+
 
 ## Auditing: running the after Islandora Workbench import verification script
 
