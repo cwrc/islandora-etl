@@ -37,9 +37,9 @@ declare variable $FIELD_MEMBER_OF external := "1";
     let $cModel := tHelper:get_cModel($metadata)
     let $id := tHelper:get_id($metadata)
     let $title := $metadata/resource_metadata/mods:mods/mods:titleInfo/mods:title/text()
-    let $field_model := tHelper:get_model_from_cModel($cModel)
-    let $field_resource_type := tHelper:get_type_from_cModel($cModel)
-    let $main_file := $metadata/media_exports/media[@ds_id/data() eq tHelper:get_main_file_from_cModel($cModel)]/@filepath/data()
+    let $field_model := tHelper:get_model_from_cModel($cModel,$id)
+    let $field_resource_type := tHelper:get_type_from_cModel($cModel,$id)
+    let $main_file := $metadata/media_exports/media[@ds_id/data() eq tHelper:get_main_file_dsid_from_cModel($cModel,$id)]/@filepath/data()
     let $associated_files := $metadata/media_exports/media[@filepath/data() != $main_file or not(exists($main_file))]
 
     return
