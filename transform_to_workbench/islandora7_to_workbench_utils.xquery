@@ -20,25 +20,59 @@ declare variable $th:WORKBENCH_SEPARATOR as xs:string := "^|.|^";
 (: https://www.loc.gov/standards/datetime/ :)
 declare variable $th:EDTF_RANGE_SEPARATOR as xs:string := "/";
 
+declare variable $th:UNSUPPORTED_MODELS := (
+      "['cwrc:place-entityCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:person-entityCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:title-entityCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:organization-entityCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:documentTemplateCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:schemaCModel', 'fedora-system:FedoraObject-3.0']"
+    );
+
 (::)
-declare function th:extract_member_of($node as node()) as xs:string
+declare function th:extract_member_of($node as node()) as xs:string*
 {
     let $list :=
         for $item in $node/resource_metadata/rdf:RDF/rdf:Description/fedora:isMemberOfCollection/@rdf:resource/data()
         return fn:substring-after($item, "/")
     return
-        string-join($list, $th:WORKBENCH_SEPARATOR)
+        if (exists($list)) then
+            $list
+        else
+            () 
 };
 
 (::)
-declare function th:extract_parent_of_page($node as node()) as xs:string
+declare function th:extract_member_of_as_string($list as xs:string*) as xs:string
+{
+    if (exists($list)) then
+        string-join($list, $th:WORKBENCH_SEPARATOR)
+    else
+        "" 
+};
+
+(::)
+declare function th:extract_parent_of_page($node as node()) as xs:string*
 {
     let $list :=
         for $item in $node/resource_metadata/rdf:RDF/rdf:Description/fedora:isMemberOf/@rdf:resource/data()
         return fn:substring-after($item, "/")
     return
-        string-join($list, $th:WORKBENCH_SEPARATOR)
+        if (exists($list)) then
+            $list
+        else
+            () 
 };
+
+(::)
+declare function th:extract_parent_of_page_as_string($list as xs:string*) as xs:string
+{
+    if (exists($list)) then
+        string-join($list, $th:WORKBENCH_SEPARATOR)
+    else
+        "" 
+};
+
 
 
 (::)
@@ -47,6 +81,43 @@ declare function th:get_parent_node($member_of as xs:string) as node()?
     collection()/metadata[@pid/data()=$member_of]
 };
 
+
+(: use a cached list of collections to avoid the lookup in the entire collection :)
+(: assumes usage of the default Drupal collection node id if collection is not present in the set :)
+(: ToDo :)
+(: specify collection as per https://mjordan.github.io/islandora_workbench_docs/paged_and_compound/#creating-collections-and-members-together :)
+(: if the member_of is not found in the current collection  :)
+declare function th:get_member_of_cached_collections($node as node(), $collection_cache as map(*), $book_cache as map(*), $default as xs:string) as map(*)
+{
+    let $member_of := th:extract_member_of($node)
+    let $page_of := th:extract_parent_of_page($node)
+    let $is_page_of_found :=  (exists($page_of) and exists(map:get($book_cache, th:extract_parent_of_page_as_string($page_of))))
+    
+    return
+        (: todo: assume a page can be attached to only one book :)
+        if (exists($page_of) and $is_page_of_found ) then
+            map { 'parent_id' : th:extract_parent_of_page_as_string($page_of), 'field_member_of' : "" }
+        else if (exists($page_of) and not($is_page_of_found) ) then
+            (: fn:error(xs:QName('page_of'), concat('Book ', $page_of, " is missing; no parent of page ", th:get_id($node), " in the set")) :)
+            map { 'parent_id' : "", 'field_member_of' : "missing parent; page orphaned" }
+        (: else if (exists($member_of) and exists(map:get($collection_cache, $member_of)) ) then :)
+        else if (exists($member_of)) then
+            let $member_of_string :=
+                for $parent in $member_of
+                return
+                    if (exists(map:get($collection_cache, $parent)) ) then
+                        $parent
+                    else 
+                        $default    
+            return  
+                map { 'parent_id' : th:extract_member_of_as_string($member_of_string), 'field_member_of' : "" }
+        else 
+            map { 'parent_id' : "", 'field_member_of' : $default }
+};
+
+
+
+(: assumes usage of the default Drupal collection node id if collection is not present in the set :)
 (: ToDo :)
 (: specify collection as per https://mjordan.github.io/islandora_workbench_docs/paged_and_compound/#creating-collections-and-members-together :)
 (: if the member_of is not found in the current collection  :)
@@ -67,7 +138,7 @@ declare function th:get_member_of($node as node(), $default as xs:string) as map
 (: given a node, get a path string in the form of /1/2 where 1 and 2 are parents of the current node :)
 declare function th:get_collection_path($node as node(), $path)
 {
-    let $member_of := th:extract_member_of($node)
+    let $member_of := th:extract_member_of($node)[1] (: Todo: this assumes usage of the first member_of :)
     let $parent_node := th:get_parent_node($member_of)
 
     return
@@ -90,6 +161,17 @@ declare function th:get_collection_path_map() as map(*)
             map { th:get_id($collection) : th:get_collection_path($collection, concat("/", th:get_id($collection))) }
     )
 };
+
+(: given a set, find all Book objects and return a mapping of the book id -- to use as a lookup for page of book objects :)
+declare function th:get_book_map() as map(*)
+{
+    map:merge(
+        for $book in collection()/metadata[resource_metadata/rdf:RDF/rdf:Description/fedora-model:hasModel/@rdf:resource/data() = "info:fedora/islandora:bookCModel"]
+        return
+            map { th:get_id($book) : "" }
+    )
+};
+
 
 (: given a node, test if is a collection cModel :)
 declare function th:is_book_or_compound($uri as xs:string) as xs:boolean
@@ -206,6 +288,8 @@ declare function th:get_main_file_dsid_from_cModel($uri as xs:string, $id as xs:
         case "info:fedora/islandora:sp_basic_image"         return ("OBJ")
         case "info:fedora/islandora:sp-audioCModel"         return ("OBJ")
         case "info:fedora/cwrc:citationCModel"              return ("")
+        case "info:fedora/islandora:compoundCModel"         return ("")
+        case "info:fedora/islandora:sp_html_snippet"        return ("") (: used by 'yale' Fedora 3 namespace:)
         default 
           return 
             fn:error(xs:QName('Main_file'), concat('Main file is missing: ', $id))
@@ -235,6 +319,15 @@ declare function th:get_marcrelator_term_from_text($role as xs:string) as xs:str
           return 
             fn:error(xs:QName('marcrelator'), concat('Marcrelator mapping missing: [', $role, ']'))   
 };
+
+
+(: BaseX CSV serialization doesn't generate a header that matches a variable number of columns (nor does it generate empty columns for rows with empty cell). The workaround:  retrieve the full list of associated files (datastreams) of all items in the collection and then add items (empty or full so there is no varibility) :)
+
+declare function th:get_list_of_possible_files() as xs:string*
+{
+    distinct-values(collection()/metadata[not(@models = $th:UNSUPPORTED_MODELS)]/media_exports/media/@ds_id/data())
+};
+
 
 (::)
 declare function th:get_main_file_name($metadata as node(), $ds_id_array as item()*, $id as xs:string) as item()*
@@ -283,6 +376,17 @@ declare function th:get_main_file($metadata as node(), $cModel as xs:string, $id
 };
 
 (::)
+declare function th:build_associated_files($possible_associated_files as xs:string*, $metadata as node()) as element()*
+{
+    for $item in $possible_associated_files
+        let $media := $metadata/media_exports/media[@ds_id/data() = $item]
+        return
+            element {concat('file_',lower-case($item))} {$media/@filepath/data()}
+};
+
+
+
+(::)
 declare function th:get_id($node as node()) as xs:string
 {
     let $id := $node/@pid/data()
@@ -308,13 +412,15 @@ declare function th:get_cModel($node as node()) as xs:string
       )
 };
 
-(: mods/titleInfo[not @type] :)
+(: mods/titleInfo[not @type]; there may be no mods and title might be in `$metadata/resource_metadata/oai_dc:dc/dc:title/text()` therefore use @label :)
 declare function th:get_title($node as node(), $cModel as xs:string) as xs:string
 {
     let $title := $node/resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:titleInfo[not(@type)]/mods:title/text()
     return
-      if (exists($title)) then
+      if (exists($title) and count($title)=1) then
         $title
+      else if (exists($title) and count($title)>1) then
+        fn:error(xs:QName('label'), concat('title/label is multivalued - possible content error: ', th:get_id($node)))
       else if ($cModel = ("info:fedora/islandora:pageCModel", "info:fedora/islandora:collectionCModel", "info:fedora/islandora:criticalEditionCModelPage", "info:fedora/islandora:tei-rdfCModel", "info:fedora/islandora:transcriptionCModel") )  then
         $node/@label/data()
       else
