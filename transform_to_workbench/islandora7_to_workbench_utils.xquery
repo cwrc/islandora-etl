@@ -379,6 +379,7 @@ declare function th:get_main_file($metadata as node(), $cModel as xs:string, $id
 declare function th:build_associated_files($possible_associated_files as xs:string*, $metadata as node()) as element()*
 {
     for $item in $possible_associated_files
+        order by lower-case($item)
         let $media := $metadata/media_exports/media[@ds_id/data() = $item]
         return
             element {concat('file_',lower-case($item))} {$media/@filepath/data()}
