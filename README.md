@@ -104,6 +104,9 @@ If items are added without a collection, the `output_csv` Islandora Workbench co
 
 todo: flesh out protential problem areas around the collection hierarchy and loading
 
+* [islandora7_to_workbench_generic.xquery](./transform_to_workbench/islandora7_to_workbench_generic.xquery) (circe 2023-08-29) is worked example of handling of collections and book object test with tpatt
+* [collection_hierarchy_display.xquery](./transform_to_workbench/util/collection_hierarchy_display.xquery) help to display the collection hierarchy
+
 #### note: Islandora Workbench subdelimiter - using non-default
 
 Due to archival records containing the `|` character, the Islandora Workbench subdelimiter set to a custom value as the Workbench default is `|`. This requires updating (2022 version is [^|.|^](https://github.com/cwrc/islandora-etl/blob/41ef5601a6e3673eb05d27a498499eb28e93617f/transform_to_workbench/islandora7_to_workbench_utils.xquery#L16)) 
