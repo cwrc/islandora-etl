@@ -88,7 +88,7 @@ declare variable $FIELD_MEMBER_OF external := "zzzzzz";
             <field_model>{$field_model}</field_model>
              <field_resource_type>{$field_resource_type}</field_resource_type>
             <file>{$main_file}</file>
-            { tHelper:build_associated_files($possible_associated_files, $metadata) }
+            { tHelper:build_associated_files($possible_associated_files, $metadata, [$main_file]) }
         </record>
 
         (: :)      

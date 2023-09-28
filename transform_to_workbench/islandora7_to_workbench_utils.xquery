@@ -375,14 +375,19 @@ declare function th:get_main_file($metadata as node(), $cModel as xs:string, $id
                         )
 };
 
-(::)
-declare function th:build_associated_files($possible_associated_files as xs:string*, $metadata as node()) as element()*
+(:
+: build a list of all possible columns representing all possible file/media - blank if unused
+: if an exception, leave blank
+:)
+declare function th:build_associated_files($possible_associated_files as xs:string*, $metadata as node(), $exception_list as xs:string*) as element()*
 {
     for $item in $possible_associated_files
         order by lower-case($item)
         let $media := $metadata/media_exports/media[@ds_id/data() = $item]
         return
-            element {concat('file_',lower-case($item))} {$media/@filepath/data()}
+            element {concat('file_',lower-case($item))} {
+                if (not($media/@filepath/data()=$exception_list)) then ($media/@filepath/data()) else ""
+                }
 };
 
 
