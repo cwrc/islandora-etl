@@ -384,10 +384,11 @@ declare function th:build_associated_files($possible_associated_files as xs:stri
     for $item in $possible_associated_files
         order by lower-case($item)
         let $media := $metadata/media_exports/media[@ds_id/data() = $item]
+        let $value :=
+            if (exists($media) and not($media/@filepath/data()=$exception_list)) then
+                $media/@filepath/data()
         return
-            element {concat('file_',lower-case($item))} {
-                if (not($media/@filepath/data()=$exception_list)) then ($media/@filepath/data()) else ""
-                }
+            element {concat('file_',lower-case($item))} { $value }
 };
 
 
