@@ -12,10 +12,9 @@ declare function tc:common_columns($metadata as node(), $cModel as xs:string, $i
     map {
         (: optional fields :)
         "url_alias" : concat("/islandora/object/", $id),
-        "title_alt" : tH:get_title_alt($metadata),
         "langcode" : tH:get_langauge($metadata),
-        "page_sequence_number" : tH:get_page_sequence_number($metadata),
 
+        "field_alternative_title" : tH:get_title_alt($metadata),
         "field_classification" : tH:get_classification_other($metadata),
         "field_coordinates" : tH:get_subject_cartographic_coordinates($metadata),
         "field_coordinates_text" : tH:get_subject_cartographic_coordinates($metadata),
@@ -50,6 +49,7 @@ declare function tc:common_columns($metadata as node(), $cModel as xs:string, $i
         "field_table_of_contents" : tH:get_table_of_contents($metadata),
         "field_temporal_subject" : tH:get_subject_temporal($metadata)
         (: let $field_weight := :)
+        "field_weight" : tH:get_page_sequence_number($metadata),
     }
 
 };
