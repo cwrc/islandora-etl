@@ -16,42 +16,28 @@ import logging
 import os
 import csv
 import re
-from edtf import parse_edtf
-from edtf.parser.edtf_exceptions import EDTFParseException
+import edtf_validate.valid_edtf
 
 DEFAULT_DATE_SEPARATOR = "^|.|^"
 #
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_file', required=True, help='List of Islandora PIDs, one per line.')
-    parser.add_argument('--delimiter', required=False, default=DEFAULT_DATE_SEPARATOR, help='List of Islandora PIDs, one per line.')
-    parser.add_argument('--column', required=True, help='CSV column to test edtf date.')
+    parser.add_argument('--delimiter', required=False, default=DEFAULT_DATE_SEPARATOR, help='Islandora Workbench multi.')
+    parser.add_argument('--column', required=True, help='CSV column to test edtf date (numerical index).')
     return parser.parse_args()
 
 
 def is_multiple_edtf_valid(date_str, delimiter):
     is_valid = False
     for item in date_str.split(delimiter):
-        if (is_edtf_valid(item) == False):
+        if (edtf_validate.valid_edtf.is_valid(item) == False):
             is_valid = False
             break
         else:
             is_valid = True 
 
     return is_valid
-
-
-#
-def is_edtf_valid(date_str):
-    is_valid = False 
-    try:
-        e = parse_edtf(date_str)
-    except EDTFParseException:
-        is_valid = False 
-    else:
-        is_valid = True 
-
-    return is_valid 
 
 
 # Main
@@ -70,7 +56,7 @@ def main():
             else:
                 if (row[column] != "") :
                     edtf_valid = is_multiple_edtf_valid(row[column], args.delimiter)
-                    print(f'\trow:[{line_count}] - valid:[{edtf_valid}] - [{row[column]}].')
+                    print(f'\trow:[{line_count}] - valid:[{edtf_valid}] - [{row[column]}] - [{row[0]}].')
             line_count += 1
         print(f'Processed {line_count} lines.')
         
