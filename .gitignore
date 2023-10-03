@@ -4,3 +4,4 @@ __pycache__
 *.log
 Islandora7_Export.egg-info/
 dist/
+transform_to_workbench/debug
