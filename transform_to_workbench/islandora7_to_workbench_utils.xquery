@@ -39,7 +39,7 @@ declare function th:extract_member_of($node as node()) as xs:string*
         if (exists($list)) then
             $list
         else
-            () 
+            ()
 };
 
 (::)
@@ -48,7 +48,7 @@ declare function th:extract_member_of_as_string($list as xs:string*) as xs:strin
     if (exists($list)) then
         string-join($list, $th:WORKBENCH_SEPARATOR)
     else
-        "" 
+        ""
 };
 
 (::)
@@ -61,7 +61,7 @@ declare function th:extract_parent_of_page($node as node()) as xs:string*
         if (exists($list)) then
             $list
         else
-            () 
+            ()
 };
 
 (::)
@@ -70,7 +70,7 @@ declare function th:extract_parent_of_page_as_string($list as xs:string*) as xs:
     if (exists($list)) then
         string-join($list, $th:WORKBENCH_SEPARATOR)
     else
-        "" 
+        ""
 };
 
 
@@ -92,7 +92,7 @@ declare function th:get_member_of_cached_collections($node as node(), $collectio
     let $member_of := th:extract_member_of($node)
     let $page_of := th:extract_parent_of_page($node)
     let $is_page_of_found :=  (exists($page_of) and exists(map:get($book_cache, th:extract_parent_of_page_as_string($page_of))))
-    
+
     return
         (: todo: assume a page can be attached to only one book :)
         if (exists($page_of) and $is_page_of_found ) then
@@ -107,11 +107,11 @@ declare function th:get_member_of_cached_collections($node as node(), $collectio
                 return
                     if (exists(map:get($collection_cache, $parent)) ) then
                         $parent
-                    else 
-                        $default    
-            return  
+                    else
+                        $default
+            return
                 map { 'parent_id' : th:extract_member_of_as_string($member_of_string), 'field_member_of' : "" }
-        else 
+        else
             map { 'parent_id' : "", 'field_member_of' : $default }
 };
 
@@ -125,13 +125,13 @@ declare function th:get_member_of($node as node(), $default as xs:string) as map
 {
     let $member_of := th:extract_member_of($node)
     let $page_of := th:extract_parent_of_page($node)
-    
+
     return
         if (exists($page_of) and exists(collection()/metadata/@pid[data()=$page_of]) ) then
             map { 'parent_id' : $page_of, 'field_member_of' : "" }
         else if (exists($member_of) and exists(collection()/metadata/@pid[data()=$member_of]) ) then
             map { 'parent_id' : $member_of, 'field_member_of' : "" }
-        else 
+        else
             map { 'parent_id' : "", 'field_member_of' : $default }
 };
 
@@ -146,9 +146,9 @@ declare function th:get_collection_path($node as node(), $path)
         then
             th:get_collection_path(
                 $parent_node,
-                concat("/", $member_of, $path) 
+                concat("/", $member_of, $path)
                 )
-        else 
+        else
             $path
 };
 
@@ -226,7 +226,7 @@ declare function th:get_model_from_cModel($uri as xs:string, $id as xs:string) a
         case "info:fedora/islandora:eventCModel"            return "UNKNOWN"
 
         default
-          return 
+          return
             fn:error(xs:QName('Resource_model'), concat('resource type field is missing: ', $id))
 };
 
@@ -266,7 +266,7 @@ declare function th:get_type_from_cModel($uri as xs:string, $id as xs:string) as
         case "info:fedora/islandora:eventCModel"            return "UNKNOWN"
 
         default
-          return 
+          return
             fn:error(xs:QName('Resource_type'), concat('resource type field is missing: ', $id))
 };
 
@@ -283,15 +283,15 @@ declare function th:get_main_file_dsid_from_cModel($uri as xs:string, $id as xs:
         case "info:fedora/cwrc:dtocCModel"                  return ("DTOC")
         case "info:fedora/islandora:pageCModel"             return ("OBJ")
         case "info:fedora/islandora:sp_pdf"                 return ("OBJ")
-        case "info:fedora/islandora:sp_videoCModel"         return ("OBJ") 
+        case "info:fedora/islandora:sp_videoCModel"         return ("OBJ")
         case "info:fedora/islandora:sp_large_image_cmodel"  return ("OBJ")
         case "info:fedora/islandora:sp_basic_image"         return ("OBJ")
         case "info:fedora/islandora:sp-audioCModel"         return ("OBJ")
         case "info:fedora/cwrc:citationCModel"              return ("")
         case "info:fedora/islandora:compoundCModel"         return ("")
         case "info:fedora/islandora:sp_html_snippet"        return ("") (: used by 'yale' Fedora 3 namespace:)
-        default 
-          return 
+        default
+          return
             fn:error(xs:QName('Main_file'), concat('Main file is missing: ', $id))
 };
 
@@ -315,9 +315,9 @@ declare function th:get_marcrelator_term_from_text($role as xs:string) as xs:str
         case "Author"       return ("aut")
         case "Editor"       return ("edt")
         case ""             return ("")
-        default 
-          return 
-            fn:error(xs:QName('marcrelator'), concat('Marcrelator mapping missing: [', $role, ']'))   
+        default
+          return
+            fn:error(xs:QName('marcrelator'), concat('Marcrelator mapping missing: [', $role, ']'))
 };
 
 
@@ -338,7 +338,7 @@ declare function th:get_main_file_name($metadata as node(), $ds_id_array as item
             $main_file
         )
         else (
-            th:get_main_file_name($metadata, subsequence($ds_id_array,2), $id) 
+            th:get_main_file_name($metadata, subsequence($ds_id_array,2), $id)
         )
 };
 
@@ -351,7 +351,7 @@ declare function th:get_main_file($metadata as node(), $cModel as xs:string, $id
             return ""
         case "info:fedora/cwrc:citationCModel"
             return ""
-        default 
+        default
             return
                 let $ds_id_array := th:get_main_file_dsid_from_cModel($cModel,$id)
                 return
@@ -359,7 +359,7 @@ declare function th:get_main_file($metadata as node(), $cModel as xs:string, $id
                     fn:error(xs:QName('Main_file'), concat('Main file is dsid not found: ', $id))
                 )
                 else
-                    let $main_file := th:get_main_file_name($metadata, $ds_id_array, $id) 
+                    let $main_file := th:get_main_file_name($metadata, $ds_id_array, $id)
                     return
                         if (not(exists($main_file))) then (
                             (: ToDo: verify assmption that bookCModel may or may not contain a file datastream :)
@@ -409,7 +409,7 @@ declare function th:get_id($node as node()) as xs:string
 (::)
 declare function th:get_cModel($node as node()) as xs:string
 {
-    let $cModel := $node/resource_metadata/rdf:RDF/rdf:Description/fedora-model:hasModel/@rdf:resource/data() 
+    let $cModel := $node/resource_metadata/rdf:RDF/rdf:Description/fedora-model:hasModel/@rdf:resource/data()
     return
       if (not(exists($cModel))) then (
         fn:error(xs:QName('cModel'), concat('cModel required field is missing: ', th:get_id($node)))
@@ -534,8 +534,8 @@ declare function th:generic_date($list as element()*) as xs:string
         for $item at $i in $list
             let $wb_separator :=
                 if (
-                        $i < $cnt 
-                        and ($list/@point = "start" or $list/@type = "start") 
+                        $i < $cnt
+                        and ($list/@point = "start" or $list/@type = "start")
                         and ($list[$i + 1]/@point = "end" or $list[$i + 1]/@type = "end")
                     )
                 then (
@@ -555,7 +555,7 @@ declare function th:generic_date($list as element()*) as xs:string
                     concat($edtf, $th:EDTF_RANGE_SEPARATOR)
                 )
                 else if (
-                        ($item/@point = "end" or $item/@type = "end") 
+                        ($item/@point = "end" or $item/@type = "end")
                         and ($i = 0 or not($list[$i - 1]/@point = "start" or $list[$i - 1]/@type = "start"))
                         )
                 then (
@@ -563,7 +563,7 @@ declare function th:generic_date($list as element()*) as xs:string
                     concat($th:EDTF_RANGE_SEPARATOR, $edtf)
                 )
                 else (
-                    $edtf 
+                    $edtf
                 )
         return
             concat($wb_content, $wb_separator)
@@ -602,6 +602,64 @@ declare function th:get_edition($node as node()) as xs:string
     string-join($node/resource_metadata/mods:mods/mods:originInfo/mods:edition/text(), $th:WORKBENCH_SEPARATOR)
 };
 
+(: convert an text language to iso639-1 (Drupal/Islandora) https://git.drupalcode.org/project/drupal/-/blob/8.8.x/core/lib/Drupal/Core/Language/LanguageManager.php#L224 :)
+declare function th:convert_text_to_iso639_1($value as xs:string, $id as xs:string) as xs:string
+{
+    switch($value)
+        case 'English' return 'en'
+        case 'French' return 'fr'
+        case 'Spanish' return 'es'
+        case 'creeng' return 'en'
+        case 'engcre' return 'en'
+        case 'cre eng' return 'en'
+        case 'eng' return 'en'
+        case 'eng hai' return 'en'
+        case 'eng mic' return 'en'
+        case 'engfre' return 'en'
+        case 'dgr eng' return 'en'
+        case 'eng sal' return 'en'
+        case 'engtli' return 'en'
+        case 'engalg' return 'en'
+        case 'English1180-0666' return 'en'
+        case 'Includes some text in Dene, Lakota, and Plains Cree languages' return 'en'
+        case 'Latin' return 'la'
+        case 'latin' return 'la'
+        case '' return ''
+        default
+            return
+                fn:error(xs:QName('Resource_model'), concat('langauge text error: ', $id, " val: ", $value))
+};
+
+(: convert an iso639-2b language code to iso639-1 (Drupal/Islandora) https://git.drupalcode.org/project/drupal/-/blob/8.8.x/core/lib/Drupal/Core/Language/LanguageManager.php#L224 :)
+declare function th:convert_iso639_2b_to_iso639_1($value as xs:string, $id as xs:string) as xs:string
+{
+    switch($value)
+        case 'eng' return 'en'
+        case 'fre' return 'fr'
+        case 'lat' return 'la'
+        case 'English' return 'en'
+        case '' return ''
+        default
+            return
+                fn:error(xs:QName('Resource_model'), concat('langauge code error: ', $id, " val: ", $value))
+};
+
+(: mods/language :)
+(: convert to iso639-1 from https://git.drupalcode.org/project/drupal/-/blob/8.8.x/core/lib/Drupal/Core/Language/LanguageManager.php#L224 :)
+declare function th:get_langcode($node as node()) as xs:string
+{
+    let $values :=
+        for $item in $node/resource_metadata/mods:mods/mods:language/mods:languageTerm
+        return
+            if ($item/@authority = 'iso639-2b' and $item/@type = 'code' and exists($item/text())) then
+                th:convert_iso639_2b_to_iso639_1($item/text(), $node/@pid)
+            else if (lower-case($item/@type) = 'text' and exists($item/text())) then
+                th:convert_text_to_iso639_1($item/text(), $node/@pid)
+            else
+                $item/text()
+    return string-join($values, $th:WORKBENCH_SEPARATOR)
+};
+
 (: mods/language :)
 declare function th:get_langauge($node as node()) as xs:string
 {
@@ -611,7 +669,12 @@ declare function th:get_langauge($node as node()) as xs:string
 (: mods/physicalDescription/form :)
 declare function th:get_form($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:physicalDescription/text(), $th:WORKBENCH_SEPARATOR)
+    (: account for empty elements :)
+    let $values :=
+        for $item in $node/resource_metadata/mods:mods/mods:physicalDescription/text()
+        return
+            if (empty(fn:normalize-space($item)) ) then ($item)
+    return string-join($values, $th:WORKBENCH_SEPARATOR)
 };
 
 (: mods/physicalDescription/extent :)
@@ -671,7 +734,7 @@ declare function th:get_note($node as node()) as xs:string
 {
     let $notes :=
         for $i in $node/resource_metadata/mods:mods/mods:note
-        let $label := 
+        let $label :=
             if ($i/@displayLabel) then (
                 concat($i/@displayLabel, ": ")
             )
@@ -688,12 +751,15 @@ declare function th:get_note($node as node()) as xs:string
 (: subject :)
 declare function th:get_geographic_subjects($node as node()) as xs:string
 {
-    string-join(
-        $node/resource_metadata/mods:mods/mods:subject/mods:geographic/text() |
-        $node/resource_metadata/mods:mods/mods:subject/mods:geographicCode/text() |
-        $node/resource_metadata/mods:mods/mods:subject/mods:hierarchicalGeographic/text(),
-
-        $th:WORKBENCH_SEPARATOR)
+    (: account for empty elements :)
+    let $values :=
+        for $item in
+            $node/resource_metadata/mods:mods/mods:subject/mods:geographic/text() |
+            $node/resource_metadata/mods:mods/mods:subject/mods:geographicCode/text() |
+            $node/resource_metadata/mods:mods/mods:subject/mods:hierarchicalGeographic/text()
+        return
+            if (empty(fn:normalize-space($item)) ) then ($item)
+    return string-join($values, $th:WORKBENCH_SEPARATOR)
 };
 
 (: mods/subject/geographic :)
@@ -736,8 +802,8 @@ declare function th:get_subject_temporal($node as node()) as xs:string
 {
     let $list :=
         $node/resource_metadata/mods:mods/mods:subject/mods:temporal[exists(text())]
-    return 
-        th:generic_date($list) 
+    return
+        th:generic_date($list)
 };
 
 (: mods/subject/name :)
