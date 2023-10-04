@@ -41,7 +41,7 @@ return
 <csv>
   {
 
-    for $metadata in /metadata
+    for $metadata in /metadata[not(@models = $tH:UNSUPPORTED_MODELS)]
 
     let $cModel := tH:get_cModel($metadata)
     let $is_collection := tH:is_collectionCModel($cModel)
