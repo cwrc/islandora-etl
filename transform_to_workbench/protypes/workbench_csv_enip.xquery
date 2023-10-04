@@ -1,6 +1,8 @@
 xquery version "3.1" encoding "utf-8";
 
-import module namespace tH="transformationHelpers" at "islandora7_to_workbench_utils.xquery";
+(: test of enip namespace content - before the introduction of the common fields :)
+
+import module namespace tH="transformationHelpers" at "../islandora7_to_workbench_utils.xquery";
 
 declare namespace map = "http://www.w3.org/2005/xpath-functions/map";
 
@@ -38,9 +40,16 @@ let $collection_path_map := tH:get_collection_path_map()
 return
 <csv>
   {
+    let $unsupported_models := (
+      "['cwrc:place-entityCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:person-entityCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:title-entityCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:organization-entityCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:documentTemplateCModel', 'fedora-system:FedoraObject-3.0']",
+      "['cwrc:schemaCModel', 'fedora-system:FedoraObject-3.0']"
+    )
+    for $metadata in /metadata[not(@models = $unsupported_models)]
 
-    for $metadata in /metadata
-   
     let $cModel := tH:get_cModel($metadata)
     let $is_collection := tH:is_collectionCModel($cModel)
     let $is_book_or_compound := tH:is_book_or_compound($cModel)
@@ -148,14 +157,20 @@ return
             {
                 (: toDo: very simplistic; assumes mods:namePart contains text and in test; expand :)
                 for $mods_name at $pos in $metadata/resource_metadata/mods:mods/mods:name[exists(mods:namePart/text())]
-                let $role := "ive"
+                let $role :=
+                    if ($mods_name/role)
+                    then
+                            for $role_node in $mods_name/role
+                            return tH:get_marcrelator_term_from_text($role_node/roleTerm/text())
+                    else
+                        tH:get_marcrelator_term_from_text('Author')
                 let $separator :=
                   if ($pos > 1)
                   then $tH:WORKBENCH_SEPARATOR
                   else ""
                 return
                   concat($separator, 'relators:', $role, ":person:", string-join($mods_name/mods:namePart/text(), " ") )
-                 
+
             }
             </field_linked_agent>
         </record>

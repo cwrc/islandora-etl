@@ -1,6 +1,8 @@
 xquery version "3.1" encoding "utf-8";
 
-import module namespace tH="transformationHelpers" at "islandora7_to_workbench_utils.xquery";
+(: test the ordering of collections and members & books and pages - before the introduction of the common fields :)
+
+import module namespace tH="transformationHelpers" at "../islandora7_to_workbench_utils.xquery";
 
 declare namespace map = "http://www.w3.org/2005/xpath-functions/map";
 
@@ -40,7 +42,7 @@ return
   {
 
     for $metadata in /metadata
-   
+
     let $cModel := tH:get_cModel($metadata)
     let $is_collection := tH:is_collectionCModel($cModel)
     let $is_book_or_compound := tH:is_book_or_compound($cModel)
@@ -99,7 +101,7 @@ return
     return
         <record>
             <a1>{$is_collection}</a1>
-            <a2>{$is_book_or_compound}</a2>            
+            <a2>{$is_book_or_compound}</a2>
             <a3>{map:get($member_of,"parent_id")}</a3>
             <a4>{$collection_path}</a4>
             <a5>zzzzzzz</a5>
@@ -109,7 +111,7 @@ return
             <field_weight>{$page_sequence_number}</field_weight>
             <url_alias>/islandora/object/{$id}</url_alias>
             <title>{$title}</title>
-            
+
         </record>
   }
 </csv>
