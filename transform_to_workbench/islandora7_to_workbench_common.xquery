@@ -5,6 +5,7 @@ xquery version "3.1" encoding "utf-8";
 module namespace tc = "transformationCommon";
 
 import module namespace tH="transformationHelpers" at "islandora7_to_workbench_utils.xquery";
+import module namespace tC="transformationCommon" at "islandora7_to_workbench_common.xquery";
 
 (: Propertier are mapped to CSV columns:)
 declare function tc:common_columns($metadata as node(), $cModel as xs:string, $id as xs:string) as map(*)
@@ -102,4 +103,69 @@ declare function tc:common_columns($properties as map(*)) as element()*
         <field_temporal_subject>{$field_temporal_subject}</field_temporal_subject>
         <field_weight></field_weight>
     :)
+};
+
+
+(: A generic / base xquery to produce input for Islandora workbench :)
+declare function tc:output_csv($item_list as item()*, $FIELD_MEMBER_OF as xs:string) as element()*
+{
+    <csv>
+    {
+
+        (: BaseX CSV serialization doesn't generate a header that matches a variable number of columns (nor does it generate empty columns for rows with empty cell). The workaround:  retrieve the full list of associated files (datastreams) of all items in the collection and then add items (empty or full so there is no varibility) :)
+        (: let $file_list := distinct-values(/metadata[not(@models = $tHelper:UNSUPPORTED_MODELS)]/media_exports/media/@ds_id/data()) :)
+        let $file_list := tH:get_list_of_possible_files()
+
+        (: enhance speed by creating a map of collection paths outside of object loop :)
+        let $collection_path_map := tH:get_collection_path_map()
+        let $book_map := tH:get_book_map()
+
+        for $metadata in $item_list
+
+            (: base variables :)
+            let $cModel := tH:get_cModel($metadata)
+            let $id := tH:get_id($metadata)
+            let $title := tH:get_title($metadata, $cModel)
+            let $field_model := tH:get_model_from_cModel($cModel,$id)
+            let $field_resource_type := tH:get_type_from_cModel($cModel,$id)
+            let $main_file := $metadata/media_exports/media[@ds_id/data() = tH:get_main_file_dsid_from_cModel($cModel,$id)]/@filepath/data()
+
+             (: Commom properties :)
+            let $properties := tC:common_columns($metadata, $cModel, $id)
+
+            (: a list of all associated files with the object -- don't exclude the main file used as Drupal media original file :)
+            let $possible_associated_files := $file_list
+
+            (: list collections at the top of the CSV followed by book/compound :)
+            (: :)
+            (: let $member_of := tH:get_member_of($metadata, $FIELD_MEMBER_OF) :)
+            let $member_of := tH:get_member_of_cached_collections($metadata, $collection_path_map, $book_map, $FIELD_MEMBER_OF)
+            let $collection_path := map:get($collection_path_map, $id)
+            let $is_collection := tH:is_collectionCModel($cModel)
+            let $is_book_or_compound := tH:is_book_or_compound($cModel)
+
+                (: list collections at the top of the CSV (based on hierarchy/path of collection) followed by book/compound :)
+            order by $is_collection descending, $is_book_or_compound descending, $collection_path
+
+
+            return
+                <record>
+                    <id>{$id}</id>
+                    <title>{$title}</title>
+                    <field_member_of>{map:get($member_of,"field_member_of")}</field_member_of>
+                    <parent_id>{map:get($member_of,"parent_id")}</parent_id>
+                    <multiple_parent_collections>{tH:extract_member_of($metadata)}</multiple_parent_collections>
+                    <parent_of_page>{tH:extract_parent_of_page($metadata)}</parent_of_page>
+                    <collection_path>{$collection_path}</collection_path>
+                    <field_model>{$field_model}</field_model>
+                    <field_resource_type>{$field_resource_type}</field_resource_type>
+                    <file>{$main_file}</file>
+                    { tH:build_associated_files($possible_associated_files, $metadata, ($main_file)) }
+                    { tC:common_columns($properties) }
+
+                </record>
+
+    }
+    </csv>
+
 };
