@@ -4,8 +4,10 @@ xquery version "3.1" encoding "utf-8";
 
 module namespace tc = "transformationCommon";
 
+declare namespace mods = "http://www.loc.gov/mods/v3";
+declare namespace dc = "http://purl.org/dc/elements/1.1/";
+
 import module namespace tH="transformationHelpers" at "islandora7_to_workbench_utils.xquery";
-import module namespace tC="transformationCommon" at "islandora7_to_workbench_common.xquery";
 
 (: Propertier are mapped to CSV columns:)
 declare function tc:common_columns($metadata as node(), $cModel as xs:string, $id as xs:string) as map(*)
@@ -13,7 +15,7 @@ declare function tc:common_columns($metadata as node(), $cModel as xs:string, $i
     map {
         (: optional fields :)
         "url_alias" : concat("/islandora/object/", $id),
-        "langcode" : tH:get_langcode($metadata),
+        (: "langcode" : tH:get_langcode($metadata), :)
 
         "field_alternative_title" : tH:get_title_alt($metadata),
         "field_classification" : tH:get_classification_other($metadata),
@@ -107,7 +109,10 @@ declare function tc:common_columns($properties as map(*)) as element()*
 
 
 (: A generic / base xquery to produce input for Islandora workbench :)
-declare function tc:output_csv($item_list as item()*, $FIELD_MEMBER_OF as xs:string) as element()*
+(:
+declare function tc:output_csv($item_list as item()*, $custom_function as function(item()) as element()*, $FIELD_MEMBER_OF as xs:string) as element()*
+:)
+declare function tc:output_csv($item_list as item()*, $custom_function as function(item()*) as element()*, $FIELD_MEMBER_OF as xs:string) as element()*
 {
     <csv>
     {
@@ -131,7 +136,7 @@ declare function tc:output_csv($item_list as item()*, $FIELD_MEMBER_OF as xs:str
             let $main_file := $metadata/media_exports/media[@ds_id/data() = tH:get_main_file_dsid_from_cModel($cModel,$id)]/@filepath/data()
 
              (: Commom properties :)
-            let $properties := tC:common_columns($metadata, $cModel, $id)
+            let $properties := tc:common_columns($metadata, $cModel, $id)
 
             (: a list of all associated files with the object -- don't exclude the main file used as Drupal media original file :)
             let $possible_associated_files := $file_list
@@ -161,11 +166,39 @@ declare function tc:output_csv($item_list as item()*, $FIELD_MEMBER_OF as xs:str
                     <field_resource_type>{$field_resource_type}</field_resource_type>
                     <file>{$main_file}</file>
                     { tH:build_associated_files($possible_associated_files, $metadata, ($main_file)) }
-                    { tC:common_columns($properties) }
+                    { tc:common_columns($properties) }
+                    { $custom_function($metadata) }
 
                 </record>
 
     }
     </csv>
+
+};
+
+
+(: declare function tc:generic_custom_function($item_metadata as item()) as element()* :)
+declare function tc:generic_custom_function($metadata as item()*) as element()*
+{
+    <field_linked_agent>
+    {
+        (: toDo: very simplistic; assumes mods:namePart contains text and in test; expand :)
+        for $mods_name at $pos in $metadata/resource_metadata/mods:mods/mods:name[exists(mods:namePart/text())]
+        let $role :=
+            if ($mods_name/role)
+            then
+                for $role_node in $mods_name/role
+                return tH:get_marcrelator_term_from_text($role_node/roleTerm/text())
+            else
+                tH:get_marcrelator_term_from_text('Author')
+        let $separator :=
+            if ($pos > 1)
+            then $tH:WORKBENCH_SEPARATOR
+            else ""
+        return
+            concat($separator, 'relators:', $role, ":person:", string-join($mods_name/mods:namePart/text(), " ") )
+
+    }
+    </field_linked_agent>
 
 };

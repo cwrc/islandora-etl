@@ -32,6 +32,7 @@ declare option output:csv "header=yes, separator=comma";
 (: CHANGE ME - ID of the default base collection :)
 declare variable $FIELD_MEMBER_OF external := "";
 
+
 let $id_list := [
     "enip:root",
     "enip:001693a4-ddbd-42b6-9016-0b73918ff752",
@@ -1070,4 +1071,5 @@ let $items := /metadata[
     and not(@models = $tH:UNSUPPORTED_MODELS)
     ]
 
-return tC:output_csv($items, $FIELD_MEMBER_OF)
+(: The `#2` in the function: the digit represents the number of arguments of your function (otherwise get an empty-sequence error). :)
+return tC:output_csv($items, tC:generic_custom_function#1, $FIELD_MEMBER_OF)
