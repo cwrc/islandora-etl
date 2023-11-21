@@ -112,7 +112,11 @@ declare function tc:common_columns($properties as map(*)) as element()*
 (:
 declare function tc:output_csv($item_list as item()*, $custom_function as function(item()) as element()*, $FIELD_MEMBER_OF as xs:string) as element()*
 :)
-declare function tc:output_csv($item_list as item()*, $custom_function as function(item()*) as element()*, $FIELD_MEMBER_OF as xs:string) as element()*
+declare function tc:output_csv(
+    $item_list as item()*,
+    $custom_function as function(item()*) as element()*,
+    $custom_properties as function(node()*, xs:string, xs:string, map(*)) as map(*),
+    $FIELD_MEMBER_OF as xs:string) as element()*
 {
     <csv>
     {
@@ -137,6 +141,7 @@ declare function tc:output_csv($item_list as item()*, $custom_function as functi
 
              (: Commom properties :)
             let $properties := tc:common_columns($metadata, $cModel, $id)
+            let $properties := $custom_properties($metadata, $cModel, $id, $properties)
 
             (: a list of all associated files with the object -- don't exclude the main file used as Drupal media original file :)
             let $possible_associated_files := $file_list
@@ -176,7 +181,6 @@ declare function tc:output_csv($item_list as item()*, $custom_function as functi
 
 };
 
-
 (: declare function tc:generic_custom_function($item_metadata as item()) as element()* :)
 declare function tc:generic_custom_function($metadata as item()*) as element()*
 {
@@ -200,5 +204,18 @@ declare function tc:generic_custom_function($metadata as item()*) as element()*
 
     }
     </field_linked_agent>
+};
 
+(: Generic template for help in creating a custom :)
+declare function tc:generic_custom_properties (
+    $metadata as node()*,
+    $cModel as xs:string,
+    $id as xs:string,
+    $properties as map(*)
+    ) as map(*)
+{
+    let $custom_properties := map{ }
+
+    (: merge the common properties with the custom properties (custom properties override) to create a new map :)
+    return map:merge(($properties, $custom_properties), map{"duplicates":"use-last"})
 };

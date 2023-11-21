@@ -34,6 +34,7 @@ declare variable $FIELD_MEMBER_OF external := "";
 
 (: define the list of PIDs to transform :)
 let $id_list := [
+    "tpatt:tpattroot"
 ]
 
 let $items := /metadata[
@@ -43,4 +44,4 @@ let $items := /metadata[
 
 (: Create a local:generic_custom_function to create custom, non-generic fields specific to a given project such as "linked agent" :)
 (: The `#2` in the function: the digit represents the number of arguments of your function (otherwise get an empty-sequence error). :)
-return tC:output_csv($items, tC:generic_custom_function#1, $FIELD_MEMBER_OF)
+return tC:output_csv($items, tC:generic_custom_function#1, tC:generic_custom_properties#4, $FIELD_MEMBER_OF)

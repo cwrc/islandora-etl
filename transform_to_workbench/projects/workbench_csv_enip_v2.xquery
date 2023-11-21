@@ -1072,4 +1072,4 @@ let $items := /metadata[
     ]
 
 (: The `#2` in the function: the digit represents the number of arguments of your function (otherwise get an empty-sequence error). :)
-return tC:output_csv($items, tC:generic_custom_function#1, $FIELD_MEMBER_OF)
+return tC:output_csv($items, tC:generic_custom_function#1, tC:generic_custom_properties#4, $FIELD_MEMBER_OF)
