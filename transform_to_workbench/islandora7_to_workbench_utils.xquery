@@ -76,7 +76,7 @@ declare function th:extract_parent_of_page_as_string($list as xs:string*) as xs:
 
 
 (::)
-declare function th:get_parent_node($member_of as xs:string) as node()?
+declare function th:get_parent_node($member_of as xs:string?) as node()?
 {
     collection()/metadata[@pid/data()=$member_of]
 };
