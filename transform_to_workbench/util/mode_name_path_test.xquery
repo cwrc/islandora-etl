@@ -10,6 +10,7 @@ for $obj in /metadata[contains(@pid/data(),'tpatt:')]/resource_metadata/mods:mod
           case "metadata" return concat(name($item), "[@pid=", "'", $item/@pid/data(), "']")
           case "mods:roleTerm" return concat(name($item), "[@type=", "'", $item/@type, "'] [", $item/@authority, "] [", $item/text(), "]")
           case "mods:namePart" return concat(name($item), "[@type=", "'", $item/@type, "'] [", $item/text(), "]")
+          case "mods:affiliation" return concat(name($item), " [", $item/text(), "]")
           default return name($item)
     return
       string-join($j, "/")

@@ -34,6 +34,18 @@ declare option output:csv "header=yes, separator=comma";
 (: set to be the default Drupal node id of the collection to attach the ingested item/collection to if no parent :)
 declare variable $FIELD_MEMBER_OF external := "zzzzzz";
 
+declare function local:mods_name_formater($mods_name as node()) as xs:string
+{
+    if ( ($mods_name/mods:namePart)[1]/@type/data() = 'family' and ($mods_name/mods:namePart)[2]/@type/data() = 'given'  )
+    then
+        string-join($mods_name/mods:namePart/text(), ", ")
+    else if (($mods_name/mods:namePart)[1]/@type/data() = 'given' and ($mods_name/mods:namePart)[2]/@type/data() = 'family'  )
+    then
+        concat( ($mods_name/mods:namePart)[2]/text(), ", ", ($mods_name/mods:namePart)[1]/text() )
+    else
+        string-join($mods_name/mods:namePart/text(), " ")
+};
+
 
 (: declare function tc:generic_custom_function($item_metadata as item()) as element()* :)
 declare function local:generic_custom_function($metadata as item()*) as element()*
@@ -42,20 +54,30 @@ declare function local:generic_custom_function($metadata as item()*) as element(
     {
         (: toDo: very simplistic; assumes mods:namePart contains text and in test; expand :)
         for $mods_name at $pos in $metadata/resource_metadata/mods:mods/mods:name[exists(mods:namePart/text())]
-        let $role :=
-            if ($mods_name/role)
-            then
-                for $role_node in $mods_name/role
-                return tH:get_marcrelator_term_from_text($role_node/roleTerm/text())
-            else
-                tH:get_marcrelator_term_from_text('Author')
-        let $separator :=
-            if ($pos > 1)
-            then $tH:WORKBENCH_SEPARATOR
-            else ""
+            let $role :=
+                if ($mods_name/role)
+                then
+                    for $role_node in $mods_name/role
+                    return tH:get_marcrelator_term_from_text($role_node/roleTerm/text())
+                else
+                    tH:get_marcrelator_term_from_text('Author')
+            let $separator :=
+                if ($pos > 1)
+                then $tH:WORKBENCH_SEPARATOR
+                else ""
 
-        return
-            concat($separator, 'relators:', $role, ":person:", string-join($mods_name/mods:namePart/text(), " ") )
+            return
+                concat($separator, 'relators:', $role, ":person:", local:mods_name_formater($mods_name) )
+                (:
+                switch( ($mods_name/mods:namePart)[1]/@type/data() )
+                    case "given"
+                        (: Standard order family, given :)
+                        return concat($separator, 'relators:', $role, ":person:", string-join($mods_name/mods:namePart/text(), ", ") )
+                    case "family"
+                        return concat($separator, 'relators:', $role, ":person:", string-join($mods_name/mods:namePart/text(), " ") )
+                    default
+                        return concat($separator, 'relators:', $role, ":person:", string-join($mods_name/mods:namePart/text(), "zzzz"), ($mods_name/mods:namePart)[2]/@type/data() )
+                :)
 
     }
     </field_linked_agent>
@@ -75,6 +97,7 @@ declare function local:generic_custom_function($metadata as item()*) as element(
       not(@models = $tH:UNSUPPORTED_MODELS)
       and resource_metadata/mods:mods/mods:name
       and contains(@pid/data(), "tpatt")
+      and not (@pid = 'tpatt:f996dd38-add2-4dd9-80c5-f231f63b7e4d')
     ]
 
     (: base variables :)
