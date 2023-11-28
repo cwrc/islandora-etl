@@ -1,0 +1,3 @@
+declare namespace mods = "http://www.loc.gov/mods/v3";
+
+distinct-values(/metadata[contains(@pid/data(),'tpatt:')]/resource_metadata/mods:mods/mods:name/@type/data())

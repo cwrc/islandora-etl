@@ -33,20 +33,6 @@ declare option output:csv "header=yes, separator=comma";
 declare variable $FIELD_MEMBER_OF external := "";
 
 
-(: Format nameParts into a linked agent :)
-declare function local:mods_name_formater($mods_name as node()) as xs:string
-{
-    if ( ($mods_name/mods:namePart)[1]/@type/data() = 'family' and ($mods_name/mods:namePart)[2]/@type/data() = 'given'  )
-    then
-        string-join($mods_name/mods:namePart/text(), ", ")
-    else if (($mods_name/mods:namePart)[1]/@type/data() = 'given' and ($mods_name/mods:namePart)[2]/@type/data() = 'family'  )
-    then
-        concat( ($mods_name/mods:namePart)[2]/text(), ", ", ($mods_name/mods:namePart)[1]/text() )
-    else
-        string-join($mods_name/mods:namePart/text(), " ")
-};
-
-
 (: declare function tc:generic_custom_function($item_metadata as item()) as element()* :)
 declare function local:generic_custom_function($metadata as item()*) as element()*
 {
@@ -54,20 +40,17 @@ declare function local:generic_custom_function($metadata as item()*) as element(
     {
         (: toDo: very simplistic; assumes mods:namePart contains text and in test; expand :)
         for $mods_name at $pos in $metadata/resource_metadata/mods:mods/mods:name[exists(mods:namePart/text())]
-            let $role :=
-                if ($mods_name/role)
-                then
-                    for $role_node in $mods_name/role
-                    return tH:get_marcrelator_term_from_text($role_node/roleTerm/text())
-                else
-                    tH:get_marcrelator_term_from_text('Author')
+            let $role_list := tH:mods_name_role($mods_name/mods:role)
+            let $person_type := tH:mods_name_type($mods_name)
             let $separator :=
-                if ($pos > 1)
+                if ($pos > 1 or count($mods_name/mods:role) > 1)
                 then $tH:WORKBENCH_SEPARATOR
                 else ""
 
             return
-                concat($separator, 'relators:', $role, ":person:", local:mods_name_formater($mods_name) )
+                (: if mods name has multiple roles :)
+                for $role in $role_list
+                return concat($separator, 'relators:', $role, ":", $person_type, ":", tH:mods_name_formater($mods_name) )
     }
     </field_linked_agent>
 };

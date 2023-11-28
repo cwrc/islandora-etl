@@ -192,9 +192,9 @@ declare function tc:generic_custom_function($metadata as item()*) as element()*
             if ($mods_name/role)
             then
                 for $role_node in $mods_name/role
-                return tH:get_marcrelator_term_from_text($role_node/roleTerm/text())
+                return tH:get_marcrelator_term_from_text($role_node/roleTerm/text(), $metadata/@pid/data())
             else
-                tH:get_marcrelator_term_from_text('Author')
+                tH:get_marcrelator_term_from_text('Author', $metadata/@pid/text())
         let $separator :=
             if ($pos > 1)
             then $tH:WORKBENCH_SEPARATOR

@@ -309,15 +309,28 @@ declare function th:get_page_sequence_number($node as node()) as xs:string
 
 (: map marcrelators text to term :)
 (: https://www.loc.gov/marc/relators/relaterm.html :)
-declare function th:get_marcrelator_term_from_text($role as xs:string) as xs:string
+declare function th:get_marcrelator_term_from_text($role as xs:string, $id as xs:string?) as xs:string
 {
      switch ($role)
         case "Author"       return ("aut")
+        case "author"       return ("aut")
         case "Editor"       return ("edt")
+        case "Illustrator"  return ("ill")
+        case "Photographer" return ("pht")
+        case "photographer" return ("pht")
+        case "Translator"   return ("trl")
+        case "Speaker"      return ("spk")
         case ""             return ("")
+        case "art"          return ("art") (: sometimes code is entered when text is specified :)
+        case "aut"          return ("aut") (: sometimes code is entered when text is specified :)
+        case "edt"          return ("edt") (: sometimes code is entered when text is specified :)
+        case "trl"          return ("trl") (: sometimes code is entered when text is specified :)
+        case "Photographers" return ("pht")(: tpatt problem :)
+        case "archivist"    return ("aut") (: tpatt problem :)
+        case "co-editor"   return ("edt") (: tpatt problem :)
         default
           return
-            fn:error(xs:QName('marcrelator'), concat('Marcrelator mapping missing: [', $role, ']'))
+            fn:error(xs:QName('marcrelator'), concat('Marcrelator mapping missing: [', $role, ']', ' [', $id, ']'))
 };
 
 
@@ -441,6 +454,45 @@ declare function th:get_title($node as node(), $cModel as xs:string) as xs:strin
 declare function th:get_title_alt($node as node()) as xs:string
 {
     string-join($node/resource_metadata/mods:mods/mods:titleInfo[@type="alternative" or @type="abbreviated" or @type="uniform"]/mods:title/text(), $th:WORKBENCH_SEPARATOR)
+};
+
+
+declare function th:mods_name_role($mods_role as element()*) as xs:string+
+{
+    (: assume if no text() then default to author :)
+    if (exists($mods_role/mods:roleTerm/text()))
+    then
+        for $role_term in $mods_role/mods:roleTerm
+            return
+                switch($role_term/@type/data())
+                case "text"
+                    return th:get_marcrelator_term_from_text($role_term/text(), $role_term/ancestor::metadata/@pid/data())
+                case "code"
+                    return $role_term/text()
+                default
+                    return 'aut'
+    else
+        th:get_marcrelator_term_from_text('Author', $mods_role/ancestor::metadata/@pid/data())
+};
+
+declare function th:mods_name_type($mods_name as element()) as xs:string
+{
+    switch($mods_name/@type/data())
+        case 'personal' return 'presonal'
+        case 'corporate' return 'corporate'
+        default return 'presonal'
+};
+
+declare function th:mods_name_formater($mods_name as node()) as xs:string
+{
+    if ( ($mods_name/mods:namePart)[1]/@type/data() = 'family' and ($mods_name/mods:namePart)[2]/@type/data() = 'given'  )
+    then
+        string-join($mods_name/mods:namePart/text(), ", ")
+    else if (($mods_name/mods:namePart)[1]/@type/data() = 'given' and ($mods_name/mods:namePart)[2]/@type/data() = 'family'  )
+    then
+        concat( ($mods_name/mods:namePart)[2]/text(), ", ", ($mods_name/mods:namePart)[1]/text() )
+    else
+        string-join($mods_name/mods:namePart/text(), " ")
 };
 
 (: ToDo :)
