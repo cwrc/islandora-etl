@@ -32,6 +32,29 @@ declare option output:csv "header=yes, separator=comma";
 (: CHANGE ME - ID of the default base collection :)
 declare variable $FIELD_MEMBER_OF external := "";
 
+(: Custom content handler :)
+declare function local:generic_custom_function($metadata as item()*) as element()*
+{
+    <field_linked_agent>
+    {
+        (: toDo: very simplistic; assumes mods:namePart contains text and in test; expand :)
+        for $mods_name at $pos in $metadata/resource_metadata/mods:mods/mods:name[exists(mods:namePart/text())]
+            let $role_list := tH:mods_name_role($mods_name/mods:role)
+            let $person_type := tH:mods_name_type($mods_name)
+            let $separator :=
+                if ($pos > 1 or count($mods_name/mods:role) > 1)
+                then $tH:WORKBENCH_SEPARATOR
+                else ""
+            return
+                (: ENIP 2023-11-30: only items with split name parts are duplicates - use first mods namePart or add test for duplication :)
+                let $formated_name := string-join($mods_name/(mods:namePart)[1]/text())
+                (: if mods name has multiple roles :)
+                for $role in $role_list
+                    return concat($separator, 'relators:', $role, ":person:", $formated_name)
+
+    }
+    </field_linked_agent>
+};
 
 let $id_list := [
     "enip:root",
@@ -1072,4 +1095,4 @@ let $items := /metadata[
     ]
 
 (: The `#2` in the function: the digit represents the number of arguments of your function (otherwise get an empty-sequence error). :)
-return tC:output_csv($items, tC:generic_custom_function#1, tC:generic_custom_properties#4, $FIELD_MEMBER_OF)
+return tC:output_csv($items, local:generic_custom_function#1, tC:generic_custom_properties#4, $FIELD_MEMBER_OF)

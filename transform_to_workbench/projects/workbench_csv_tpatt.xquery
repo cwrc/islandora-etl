@@ -32,8 +32,7 @@ declare option output:csv "header=yes, separator=comma";
 (: CHANGE ME - ID of the default base collection :)
 declare variable $FIELD_MEMBER_OF external := "";
 
-
-(: declare function tc:generic_custom_function($item_metadata as item()) as element()* :)
+(: custom content handler :)
 declare function local:generic_custom_function($metadata as item()*) as element()*
 {
     <field_linked_agent>
@@ -48,9 +47,11 @@ declare function local:generic_custom_function($metadata as item()*) as element(
                 else ""
 
             return
+                (: custom name formatter :)
+                let $formatted_name := tH:mods_name_formater($mods_name)
                 (: if mods name has multiple roles :)
                 for $role in $role_list
-                return concat($separator, 'relators:', $role, ":", $person_type, ":", tH:mods_name_formater($mods_name) )
+                    return concat($separator, 'relators:', $role, ":", $person_type, ":", $formatted_name)
     }
     </field_linked_agent>
 };

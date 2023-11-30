@@ -188,19 +188,17 @@ declare function tc:generic_custom_function($metadata as item()*) as element()*
     {
         (: toDo: very simplistic; assumes mods:namePart contains text and in test; expand :)
         for $mods_name at $pos in $metadata/resource_metadata/mods:mods/mods:name[exists(mods:namePart/text())]
-        let $role :=
-            if ($mods_name/role)
-            then
-                for $role_node in $mods_name/role
-                return tH:get_marcrelator_term_from_text($role_node/roleTerm/text(), $metadata/@pid/data())
-            else
-                tH:get_marcrelator_term_from_text('Author', $metadata/@pid/text())
-        let $separator :=
-            if ($pos > 1)
-            then $tH:WORKBENCH_SEPARATOR
-            else ""
-        return
-            concat($separator, 'relators:', $role, ":person:", string-join($mods_name/mods:namePart/text(), " ") )
+            let $role_list := tH:mods_name_role($mods_name/mods:role)
+            let $person_type := tH:mods_name_type($mods_name)
+            let $separator :=
+                if ($pos > 1 or count($mods_name/mods:role) > 1)
+                then $tH:WORKBENCH_SEPARATOR
+                else ""
+            return
+                let $formated_name := string-join($mods_name/mods:namePart/text())
+                (: if mods name has multiple roles :)
+                for $role in $role_list
+                    return concat($separator, 'relators:', $role, ":person:", $formated_name)
 
     }
     </field_linked_agent>
