@@ -459,8 +459,10 @@ declare function th:build_associated_files($possible_associated_files as xs:stri
         let $value :=
             if (exists($media) and not($media/@filepath/data()=$exception_list)) then
                 $media/@filepath/data()
+                 else ()
         return
             element {concat('file_',lower-case($item))} { $value }
+           
 };
 
 
@@ -785,6 +787,7 @@ declare function th:get_form($node as node()) as xs:string
         for $item in $node/resource_metadata/mods:mods/mods:physicalDescription/text()
         return
             if (empty(fn:normalize-space($item)) ) then ($item)
+            else ()
     return string-join($values, $th:WORKBENCH_SEPARATOR)
 };
 
@@ -869,7 +872,7 @@ declare function th:get_geographic_subjects($node as node()) as xs:string
             $node/resource_metadata/mods:mods/mods:subject/mods:geographicCode/text() |
             $node/resource_metadata/mods:mods/mods:subject/mods:hierarchicalGeographic/text()
         return
-            if (empty(fn:normalize-space($item)) ) then ($item)
+            if (empty(fn:normalize-space($item)) ) then ($item) else ()
     return string-join($values, $th:WORKBENCH_SEPARATOR)
 };
 

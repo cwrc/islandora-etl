@@ -8,7 +8,7 @@ import module namespace tH="transformationHelpers" at "../islandora7_to_workbenc
 import module namespace tC="transformationCommon" at "../islandora7_to_workbench_common.xquery";
 
 declare namespace map = "http://www.w3.org/2005/xpath-functions/map";
-
+declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization"; 
 declare namespace mods = "http://www.loc.gov/mods/v3";
 declare namespace dc = "http://purl.org/dc/elements/1.1/";
 declare namespace oai_dc = "http://www.openarchives.org/OAI/2.0/oai_dc/";
@@ -17,20 +17,20 @@ declare namespace fedora-model="info:fedora/fedora-system:def/model#";
 declare namespace rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
 (: Uncomment to output as XML for the use case: XML to CSV conversion in a tool such as OxygenXML :)
-(:
+
 declare namespace saxon="http://saxon.sf.net/";
 declare option output:method    "xml";
 declare option output:indent    "yes";
 declare option saxon:output     "method=xml";
-:)
 
-(: CSV output method if XML tooling supports (e.g., basex.org) :)
+
+(: CSV output method if XML tooling supports (e.g., basex.org) 
 declare option output:method "csv";
-declare option output:csv "header=yes, separator=comma";
+declare option output:csv "header=yes, separator=comma";:)
 
 
 (: CHANGE ME - ID of the default base collection :)
-declare variable $FIELD_MEMBER_OF external := "";
+declare variable $FIELD_MEMBER_OF external := "50";
 
 (: custom content handler :)
 declare function local:generic_custom_function($metadata as item()*) as element()*

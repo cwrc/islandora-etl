@@ -3,7 +3,7 @@ xquery version "3.1" encoding "utf-8";
 (: Common parts of a transform :)
 
 module namespace tc = "transformationCommon";
-
+declare namespace map = "http://www.w3.org/2005/xpath-functions/map";
 declare namespace mods = "http://www.loc.gov/mods/v3";
 declare namespace dc = "http://purl.org/dc/elements/1.1/";
 
