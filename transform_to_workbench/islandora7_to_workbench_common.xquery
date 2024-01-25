@@ -157,7 +157,6 @@ declare function tc:output_csv(
                 (: list collections at the top of the CSV (based on hierarchy/path of collection) followed by book/compound :)
             order by $is_collection descending, $is_book_or_compound descending, $collection_path
 
-
             return
                 <record>
                     <id>{$id}</id>
@@ -175,11 +174,39 @@ declare function tc:output_csv(
                     { $custom_function($metadata) }
 
                 </record>
+    }
+    </csv>
+};
 
+(: A test version for minimal output :)
+declare function tc:output_csv_test_min(
+    $item_list as item()*,
+    $custom_function as function(item()*) as element()*,
+    $custom_properties as function(node()*, xs:string, xs:string, map(*)) as map(*),
+    $FIELD_MEMBER_OF as xs:string) as element()*
+{
+    <csv>
+    {
+        for $metadata in $item_list
+
+            (: base variables :)
+            let $cModel := tH:get_cModel($metadata)
+            let $id := tH:get_id($metadata)
+            let $title := tH:get_title($metadata, $cModel)
+            let $field_model := tH:get_model_from_cModel($cModel,$id)
+            let $field_resource_type := tH:get_type_from_cModel($cModel,$id)
+
+            return
+                <record>
+                    <id>{$id}</id>
+                    <title>{$title}</title>
+                    { $custom_function($metadata) }
+                </record>
     }
     </csv>
 
 };
+
 
 (: declare function tc:generic_custom_function($item_metadata as item()) as element()* :)
 declare function tc:generic_custom_function($metadata as item()*) as element()*

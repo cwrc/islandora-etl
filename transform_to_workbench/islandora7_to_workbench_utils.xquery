@@ -462,7 +462,7 @@ declare function th:build_associated_files($possible_associated_files as xs:stri
                  else ()
         return
             element {concat('file_',lower-case($item))} { $value }
-           
+
 };
 
 
@@ -921,9 +921,22 @@ declare function th:get_subject_temporal($node as node()) as xs:string
 };
 
 (: mods/subject/name :)
+(: todo: doesn't work well with taxonomy :)
 declare function th:get_subject_name($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:subject/mods:name/text(), $th:WORKBENCH_SEPARATOR)
+    let $list :=
+        for $item in $node/resource_metadata/mods:mods/mods:subject/mods:name
+        return
+            if (exists($item/mods:namePart)) then
+                string-join($item/mods:namePart/text(), " ")
+            else if (exists($item/text())) then
+                $item/text()
+            else if (exists($item/@valueURI)) then
+                $item/@valueURI/data()
+            else
+                fn:error(xs:QName('subject_name'), concat(': Subject name invalid [', $item/(@*|text()), '] ' , $node/@pid/data()))
+    return
+        string-join($list, $th:WORKBENCH_SEPARATOR)
 };
 
 (: mods/subject/occupation :)
