@@ -36,11 +36,11 @@ declare variable $FIELD_MEMBER_OF external := "50";
 (: custom content handler :)
 declare function local:generic_custom_function($metadata as item()*) as element()*
 {
-    <test>
-    {
-        tH:get_subject_name($metadata)
-    }
-    </test>
+    (: Using the squenence syntax (notice the "()" and "," comma. This also works with "element" syntax "element test {function($metadata)}" :)
+    (
+        <test>{tH:get_subject_name($metadata)}</test>,
+        <test2>{tH:get_subject_name($metadata)}</test2>
+    )
 };
 
 (: define the list of PIDs to transform :)
