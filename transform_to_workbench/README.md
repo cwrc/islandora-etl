@@ -25,6 +25,7 @@ Pattern:
 
 * The [common_columns function](<https://github.com/cwrc/islandora-etl/blob/749dd4ad7e02346e53301c9edad94c68eade2b11/transform_to_workbench/islandora7_to_workbench_common.xquery#L13-L56>) in [./islandora7_to_workbench_common.xquery] contains the mapping of the Drupal field names (e.g., field_description) and an XQuery function that creates the contents
   * add the the map: `"field_my_custom_drupal_field" : tH:get_value_for_my_custom_drupal_field($metadata),`
+  * an example: <https://github.com/cwrc/islandora-etl/blob/3ecf5883513af83cceeeba6408acc1d116ffd1cd/transform_to_workbench/islandora7_to_workbench_common.xquery#L25>
 * Create a new function that builds the string for the new field. An example: <https://github.com/cwrc/islandora-etl/blob/a5bb54dffa0852534eb141782457b5a30e47c084/transform_to_workbench/islandora7_to_workbench_utils.xquery#L812-L816>
 
 The [output.csv function](https://github.com/cwrc/islandora-etl/blob/a5bb54dffa0852534eb141782457b5a30e47c084/transform_to_workbench/islandora7_to_workbench_common.xquery#L115-L179) does the builds the CSV based on the above pattern
