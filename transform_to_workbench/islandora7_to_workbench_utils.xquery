@@ -920,21 +920,48 @@ declare function th:get_subject_temporal($node as node()) as xs:string
         th:generic_date($list)
 };
 
+(: Works with only subject/name content as the function make several assumptions that a valid only in the subject/name context
+  * nd assumes all have type="given" and type="family" attribute values
+  :)
+declare function th:get_subject_name_with_type($item as node()) as xs:string
+{
+    concat($item/mods:namePart[type="given"]/text(), " ", $item/mods:namePart[type="family"]/text())
+};
+
 (: mods/subject/name :)
 (: todo: doesn't work well with taxonomy :)
 declare function th:get_subject_name($node as node()) as xs:string
 {
     let $list :=
         for $item in $node/resource_metadata/mods:mods/mods:subject/mods:name
-        return
-            if (exists($item/mods:namePart)) then
-                string-join($item/mods:namePart/text(), " ")
-            else if (exists($item/text())) then
-                $item/text()
-            else if (exists($item/@valueURI)) then
-                $item/@valueURI/data()
-            else
-                fn:error(xs:QName('subject_name'), concat(': Subject name invalid [', $item/(@*|text()), '] ' , $node/@pid/data()))
+            (: set the vocabulary as repository item field "field_subjects_name" is a taxonomy reference :)
+            let $vocabulary :=
+                switch ($item/@type/data())
+                    case "personal"     return "person"
+                    case "corporate"    return "corporate_body"
+                    default             return "person"
+            let $id :=
+                if (exists($item[mods:namePart[@type='family'] and mods:namePart[@type='given']])) then
+                    th:get_subject_name_with_type(@item)
+                else if (exists($item/mods:namePart[not(mods:namePart[@type='family'] or mods:namePart[@type='given']) and text()])) then
+                (: else if (exists($item/mods:namePart)) then :)
+                    string-join($item/mods:namePart/text(), " ")
+                (: else if (exists($item/text()) and count(item/text()=1)) then :)
+                else if (exists($item/text())) then
+                    string-join($item/text())
+                else if (exists($item/@valueURI)) then
+                    $item/@valueURI/data()
+                else
+                    fn:error(xs:QName('subject_name'), concat(': Subject name invalid [', string-join($item//(@*|text())), '] ' , $node/@pid/data()))
+                    (: fn:error(xs:QName('subject_name'), concat(': Subject name invalid [', $item/(@*|text()), '] ' , $node/@pid/data())) :)
+            return
+                (: if (count($id)!=1) then :)
+                if (count($id)>1) then
+                    fn:error(xs:QName('subject_name'), concat(': Subject name weird : ' , $node/@pid/data()))
+                else if (count($id)=0) then
+                    ()
+                else
+                    concat($vocabulary, ':', $id)
     return
         string-join($list, $th:WORKBENCH_SEPARATOR)
 };

@@ -39,7 +39,7 @@ declare function local:generic_custom_function($metadata as item()*) as element(
     (: Using the squenence syntax (notice the "()" and "," comma. This also works with "element" syntax "element test {function($metadata)}" :)
     (
         <test>{tH:get_subject_name($metadata)}</test>,
-        <test2>{tH:get_subject_name($metadata)}</test2>
+        <a></a>
     )
 };
 
