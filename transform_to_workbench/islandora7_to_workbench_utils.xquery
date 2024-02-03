@@ -947,8 +947,8 @@ declare function th:get_subject_name($node as node()) as xs:string
                 (: else if (exists($item/mods:namePart)) then :)
                     string-join($item/mods:namePart/text(), " ")
                 (: else if (exists($item/text()) and count(item/text()=1)) then :)
-                else if (exists($item/text())) then
-                    string-join($item/text())
+                else if (exists(normalize-space($item/text()))) then
+                    normalize-space(string-join($item/text()))
                 else if (exists($item/@valueURI)) then
                     $item/@valueURI/data()
                 else
@@ -958,7 +958,7 @@ declare function th:get_subject_name($node as node()) as xs:string
                 (: if (count($id)!=1) then :)
                 if (count($id)>1) then
                     fn:error(xs:QName('subject_name'), concat(': Subject name weird : ' , $node/@pid/data()))
-                else if (count($id)=0) then
+                else if (count($id)=0 or $id='') then
                     ()
                 else
                     concat($vocabulary, ':', $id)
