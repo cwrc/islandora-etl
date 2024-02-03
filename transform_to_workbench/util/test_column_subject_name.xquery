@@ -1,6 +1,6 @@
 xquery version "3.1" encoding "utf-8";
 
-(: Test one colume :)
+(: Test one column :)
 (:
 :)
 
