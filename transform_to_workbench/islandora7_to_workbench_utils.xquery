@@ -1069,6 +1069,28 @@ declare function th:get_related_item_idenifier_issn($node as node()) as xs:strin
         )
 };
 
+
+(: Related Item Place Published :)
+(:
+    $node/resource_metadata/mods:mods/mods:relatedItem/mods:originInfo/mods:place/text()
+    or
+    $node/resource_metadata/mods:mods/mods:relatedItem/mods:originInfo/mods:place/mods:placeTerm/text()
+ :)
+declare function th:get_related_item_place_published($node as node()) as xs:string
+{
+    (: filter out mods:place with newline characters :)
+    let $normalized_space_values :=
+        for $i in $node/resource_metadata/mods:mods/mods:relatedItem/mods:originInfo/mods:place/(text() | mods:placeTerm/text())
+        return
+            if (normalize-space($i) != '') then
+                $i
+            else
+                ()
+    return
+        string-join($normalized_space_values, $th:WORKBENCH_SEPARATOR)
+};
+
+
 (: identifier :)
 (: mods/identifier (no type, or any type but ISBN, OCLC, local, ...etc.) :)
 declare function th:get_idenifier($node as node()) as xs:string
