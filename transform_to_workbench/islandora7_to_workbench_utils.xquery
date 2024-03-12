@@ -1091,6 +1091,27 @@ declare function th:get_related_item_place_published($node as node()) as xs:stri
 };
 
 
+(: Related Item Title :)
+(: :)
+declare function th:get_related_item_title($node as node()) as xs:string
+{
+   (: filter out mods:place with newline characters :)
+    let $normalized_space_values :=
+        for $i in
+            $node/resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo
+                [not(@*) or @uasge='primary']
+                /mods:title/text()
+        return
+            if (normalize-space($i) != '') then
+                $i
+            else
+                ()
+    return
+        string-join($normalized_space_values, $th:WORKBENCH_SEPARATOR)
+
+};
+
+
 (: identifier :)
 (: mods/identifier (no type, or any type but ISBN, OCLC, local, ...etc.) :)
 declare function th:get_idenifier($node as node()) as xs:string
