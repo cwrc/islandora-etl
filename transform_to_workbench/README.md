@@ -28,7 +28,7 @@ Pattern:
   * an example: <https://github.com/cwrc/islandora-etl/blob/3ecf5883513af83cceeeba6408acc1d116ffd1cd/transform_to_workbench/islandora7_to_workbench_common.xquery#L25>
 * Create a new function that builds the string for the new field. An example: <https://github.com/cwrc/islandora-etl/blob/a5bb54dffa0852534eb141782457b5a30e47c084/transform_to_workbench/islandora7_to_workbench_utils.xquery#L812-L816>
 
-The [output.csv function](https://github.com/cwrc/islandora-etl/blob/a5bb54dffa0852534eb141782457b5a30e47c084/transform_to_workbench/islandora7_to_workbench_common.xquery#L115-L179) does the builds the CSV based on the above pattern
+The [output.csv function](https://github.com/cwrc/islandora-etl/blob/a5bb54dffa0852534eb141782457b5a30e47c084/transform_to_workbench/islandora7_to_workbench_common.xquery#L115-L179) builds the CSV based on the above pattern
 
 A working example: <https://github.com/cwrc/islandora-etl/blob/main/transform_to_workbench/projects/workbench_csv_tpatt.xquery>
 
@@ -43,7 +43,7 @@ The `/prototype` directory contains a set of tests and inquiry tools to work wit
 
 The `/utilities` directory contains a set of inquiry tools to work with the `islandora7_export.py` format. These include:
 
-* inquiry tools to learn more about how the `mod:name` XML is structured
+* inquiry tools to learn more about how the `mods:name` XML is structured
 * list pages of books
 * EDTF date inspections
 * collection hierarchy information

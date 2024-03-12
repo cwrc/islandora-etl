@@ -494,12 +494,23 @@ declare function th:get_cModel($node as node()) as xs:string
 };
 
 (: mods/titleInfo[not @type]; there may be no mods and title might be in `$metadata/resource_metadata/oai_dc:dc/dc:title/text()` therefore use @label :)
+(: A complext example
+ <title>Review: Teresa Ransom:
+  <extension>
+   <tei:title level="m">The Mysterious Miss Marie Corelli</tei:title>
+  </extension>
+; Annette R. Federico:
+  <extension>
+   <tei:title level="m">Idol of Suburbia</tei:title>
+  </extension>
+ </title>
+:)
 declare function th:get_title($node as node(), $cModel as xs:string) as xs:string
 {
-    let $title := $node/resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:titleInfo[not(@type)]/mods:title/text()
+    let $title := $node/resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:titleInfo[not(@type)]/mods:title
     return
       if (exists($title) and count($title)=1) then
-        $title
+        normalize-space(string-join($title//text(), ""))
       else if (exists($title) and count($title)>1) then
         fn:error(xs:QName('label'), concat('title/label is multivalued - possible content error: ', th:get_id($node)))
       else if ($cModel = ("info:fedora/islandora:pageCModel", "info:fedora/islandora:collectionCModel", "info:fedora/islandora:criticalEditionCModelPage", "info:fedora/islandora:tei-rdfCModel", "info:fedora/islandora:transcriptionCModel") )  then
@@ -1011,6 +1022,52 @@ declare function th:get_classification_other($node as node()) as xs:string
 (: mods/relatedItem[@type="host"]/identifier[@type="issn"] :)
 (: mods/relatedItem[@type="host"]/identifier[@type="serial number"] :)
 (: mods/relatedItem[@type="host"]/name[@type='corporate' and role/roleTerm="author"]/mods:namePart[not(@type)] :)
+
+
+(: Related Item Identifier - not doi/issn/isbn :)
+(: relatedItem/identifier and not(@type=('doi', 'issn', 'isbn')) :)
+declare function th:get_related_item_idenifier($node as node()) as xs:string
+{
+    string-join(
+        $node/resource_metadata/mods:mods/mods:relatedItem/mods:identifier[
+            not(@type=['doi', 'DOI', 'issn', 'ISSN', 'isbn', 'ISBN'])
+            ]/text(),
+        $th:WORKBENCH_SEPARATOR
+        )
+};
+
+
+(: Related Item Identifier DOI :)
+(: relatedItem/identifier and @type='doi' :)
+declare function th:get_related_item_idenifier_doi($node as node()) as xs:string
+{
+    string-join(
+        $node/resource_metadata/mods:mods/mods:relatedItem/mods:identifier[@type=['doi', 'DOI']]/text(),
+        $th:WORKBENCH_SEPARATOR
+        )
+};
+
+
+(: Related Item Identifier ISBN :)
+(: relatedItem/identifier and @type='isbn' :)
+declare function th:get_related_item_idenifier_isbn($node as node()) as xs:string
+{
+    string-join(
+        $node/resource_metadata/mods:mods/mods:relatedItem/mods:identifier[@type=['isbn', 'ISBN']]/text(),
+        $th:WORKBENCH_SEPARATOR
+        )
+};
+
+
+(: Related Item Identifier ISSN :)
+(: relatedItem/identifier and @type='issn' :)
+declare function th:get_related_item_idenifier_issn($node as node()) as xs:string
+{
+    string-join(
+        $node/resource_metadata/mods:mods/mods:relatedItem/mods:identifier[@type=['issn', 'ISSN']]/text(),
+        $th:WORKBENCH_SEPARATOR
+        )
+};
 
 (: identifier :)
 (: mods/identifier (no type, or any type but ISBN, OCLC, local, ...etc.) :)
