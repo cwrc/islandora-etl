@@ -1092,14 +1092,16 @@ declare function th:get_related_item_place_published($node as node()) as xs:stri
 
 
 (: Related Item Title :)
-(: :)
+(: $node/resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo[not(@*) or @usage='primary']
+                /mods:title/text()
+ :)
 declare function th:get_related_item_title($node as node()) as xs:string
 {
-   (: filter out mods:place with newline characters :)
+    (: filter out mods:place with newline characters :)
     let $normalized_space_values :=
         for $i in
             $node/resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo
-                [not(@*) or @uasge='primary']
+                [not(@*) or @usage='primary']
                 /mods:title/text()
         return
             if (normalize-space($i) != '') then
