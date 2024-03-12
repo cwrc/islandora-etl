@@ -1033,6 +1033,15 @@ declare function th:get_related_item_place_boolean($node as node()) as xs:string
         ""
 };
 
+(: mods/titleInfo[@type="alternative" or @type="abbreviated" or @type="uniform"] :)
+declare function th:get_related_item_title_alt($node as node()) as xs:string
+{
+    string-join(
+        $node/resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo[@type="alternative" or @type="abbreviated" or @type="uniform"]/mods:title/text(),
+        $th:WORKBENCH_SEPARATOR
+        )
+};
+
 (: Related Item Identifier - not doi/issn/isbn :)
 (: relatedItem/identifier and not(@type=('doi', 'issn', 'isbn')) :)
 declare function th:get_related_item_idenifier($node as node()) as xs:string
