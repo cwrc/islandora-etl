@@ -1024,6 +1024,15 @@ declare function th:get_classification_other($node as node()) as xs:string
 (: mods/relatedItem[@type="host"]/name[@type='corporate' and role/roleTerm="author"]/mods:namePart[not(@type)] :)
 
 
+(: Related Item true/false:)
+declare function th:get_related_item_place_boolean($node as node()) as xs:string
+{
+    if ($node/resource_metadata/mods:mods/mods:relatedItem) then
+        "1"
+    else
+        ""
+};
+
 (: Related Item Identifier - not doi/issn/isbn :)
 (: relatedItem/identifier and not(@type=('doi', 'issn', 'isbn')) :)
 declare function th:get_related_item_idenifier($node as node()) as xs:string
@@ -1068,7 +1077,6 @@ declare function th:get_related_item_idenifier_issn($node as node()) as xs:strin
         $th:WORKBENCH_SEPARATOR
         )
 };
-
 
 (: Related Item Place Published :)
 (:

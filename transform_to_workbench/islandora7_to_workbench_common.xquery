@@ -52,6 +52,7 @@ declare function tc:common_columns($metadata as node(), $cModel as xs:string, $i
         "field_table_of_contents" : tH:get_table_of_contents($metadata),
         "field_temporal_subject" : tH:get_subject_temporal($metadata),
         (: relatedItem :)
+        "field_related_item_boolean" : tH:get_related_item_place_boolean($metadata),
         "field_related_item_identifier" : tH:get_related_item_idenifier($metadata),
         "field_related_identifier_do" : tH:get_related_item_idenifier_doi($metadata),
         "field_related_identifier_isbn" : tH:get_related_item_idenifier_isbn($metadata),
