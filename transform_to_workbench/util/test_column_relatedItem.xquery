@@ -42,6 +42,13 @@ declare function local:generic_custom_function($metadata as item()*) as element(
         <doi>{tH:get_related_item_idenifier_doi($metadata)}</doi>,
         <isbn>{tH:get_related_item_idenifier_isbn($metadata)}</isbn>,
         <issn>{tH:get_related_item_idenifier_issn($metadata)}</issn>,
+        <field_related_item_place_publish>{tH:get_related_item_place_published($metadata)}</field_related_item_place_publish>,
+        <field_related_item_title>{tH:get_related_item_title($metadata)}</field_related_item_title>,
+        <field_related_item_type>{tH:get_related_item_type($metadata)}</field_related_item_type>,
+        <field_related_item_boolean>{tH:get_related_item_place_boolean($metadata)}</field_related_item_boolean>,
+        <field_related_item_alternative_t>{tH:get_related_item_title_alt($metadata)}</field_related_item_alternative_t>,
+        <field_related_item_date_created>{tH:get_related_item_date_created($metadata)}</field_related_item_date_created>,
+        <field_related_item_date_issued>{tH:get_related_item_date_issued($metadata)}</field_related_item_date_issued>,
         <a></a>
     )
 };
@@ -53,10 +60,24 @@ let $id_list := [
 let $items := /metadata[
     (
         @pid=$id_list
-        or 
+        or
         (
-          resource_metadata/mods:mods/mods:relatedItem//mods:identifier/text()
-          and 
+          (
+            (:
+            resource_metadata/mods:mods/mods:relatedItem//mods:identifier/text()
+            or
+            resource_metadata/mods:mods/mods:relatedItem/mods:originInfo/mods:place
+            or
+            resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo/mods:title
+            or
+            resource_metadata/mods:mods/mods:relatedItem[@type]
+            or 
+            resource_metadata/mods:mods/mods:relatedItem//mods:dateIssued
+            :)
+            resource_metadata/mods:mods/mods:relatedItem//mods:dateCreated
+
+          )
+          and
           resource_metadata/mods:mods/mods:titleInfo/mods:title (: some items don't have a title, remove from test for now :)
         )
         (: or contains(@pid/data(), "tpattzzzzzz") :)
