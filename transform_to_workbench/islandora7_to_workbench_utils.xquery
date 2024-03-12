@@ -1113,6 +1113,29 @@ declare function th:get_related_item_title($node as node()) as xs:string
 
 };
 
+(: Related Item Type :)
+(: :)
+declare function th:get_related_item_type($node as node()) as xs:string
+{
+    let $item_list :=
+        for $i in $node/resource_metadata/mods:mods/mods:relatedItem/@type/data()
+        return
+                switch ($i)
+                    case "host" return $i
+                    case "series" return $i
+                    case "original" return $i
+                    case "succeeding" return $i
+                    case "constituent" return $i
+                    case "otherVersion" return $i
+                    case "otherFormat" return "other format"
+                    case "" return ()
+                    default
+                        return
+                            fn:error(xs:QName('Related_type'), concat('Invalid related type: ', base-uri($node)))
+    return
+        string-join($item_list, $th:WORKBENCH_SEPARATOR)
+};
+
 
 (: identifier :)
 (: mods/identifier (no type, or any type but ISBN, OCLC, local, ...etc.) :)

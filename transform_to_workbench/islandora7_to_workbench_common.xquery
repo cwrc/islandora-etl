@@ -58,6 +58,7 @@ declare function tc:common_columns($metadata as node(), $cModel as xs:string, $i
         "field_related_item_identifier_is" : tH:get_related_item_idenifier_issn($metadata),
         "field_related_item_place_publish" : tH:get_related_item_place_published($metadata),
         "field_related_item_title" : tH:get_related_item_title($metadata),
+        "field_related_item_type" : tH:get_related_item_type($metadata),
         (: let $field_weight := :)
         "field_weight" : tH:get_page_sequence_number($metadata)
     }
