@@ -221,26 +221,23 @@ declare function tc:output_csv_test_min(
 
 
 (: declare function tc:generic_custom_function($item_metadata as item()) as element()* :)
+(:
+: Required properties:
+:  * field_linked_agent
+:  * field_related_item_contributor_s
+:)
 declare function tc:generic_custom_function($metadata as item()*) as element()*
 {
     <field_linked_agent>
     {
-        (: toDo: very simplistic; assumes mods:namePart contains text and in test; expand :)
-        for $mods_name at $pos in $metadata/resource_metadata/mods:mods/mods:name[exists(mods:namePart/text())]
-            let $role_list := tH:mods_name_role($mods_name/mods:role)
-            let $person_type := tH:mods_name_type($mods_name)
-            let $separator :=
-                if ($pos > 1 or count($mods_name/mods:role) > 1)
-                then $tH:WORKBENCH_SEPARATOR
-                else ""
-            return
-                let $formated_name := string-join($mods_name/mods:namePart/text())
-                (: if mods name has multiple roles :)
-                for $role in $role_list
-                    return concat($separator, 'relators:', $role, ":person:", $formated_name)
-
+        tH:generic_linked_agent($metadata/resource_metadata/mods:mods/mods:name[exists(mods:namePart/text())])
     }
-    </field_linked_agent>
+    </field_linked_agent>,
+    <field_related_item_contributor_s>
+    {
+        tH:generic_linked_agent($metadata/resource_metadata/mods:mods/mods:relatedItem/mods:name[exists(mods:namePart/text())])
+    }
+    </field_related_item_contributor_s>
 };
 
 (: Generic template for help in creating a custom :)

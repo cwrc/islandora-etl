@@ -33,6 +33,11 @@ declare option output:csv "header=yes, separator=comma";
 declare variable $FIELD_MEMBER_OF external := "";
 
 (: Custom content handler :)
+(:
+: Required properties:
+:  * field_linked_agent
+:  * field_related_item_contributor_s
+:)
 declare function local:generic_custom_function($metadata as item()*) as element()*
 {
     <field_linked_agent>
@@ -53,7 +58,13 @@ declare function local:generic_custom_function($metadata as item()*) as element(
                     return concat($separator, 'relators:', $role, ":person:", $formated_name)
 
     }
-    </field_linked_agent>
+    </field_linked_agent>,
+    <field_related_item_contributor_s>
+    {
+        (: toDo: don't use this placeholder, add project specific code :)
+        tH:generic_linked_agent($metadata/resource_metadata/mods:mods/mods:relatedItem/mods:name[exists(mods:namePart/text())])
+    }
+    </field_related_item_contributor_s>
 };
 
 let $id_list := [
