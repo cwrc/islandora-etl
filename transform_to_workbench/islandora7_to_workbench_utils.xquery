@@ -493,6 +493,24 @@ declare function th:get_cModel($node as node()) as xs:string
       )
 };
 
+declare function th:truncate_string($str as xs:string, $len as xs:integer) as xs:string
+{
+    if (string-length($str) > $len)
+    then
+        let $delim := ' '
+        let $str_substring := substring($str, 1, $len)
+        return
+          if (contains($str_substring, $delim))
+          then
+            (: substring-before-last($str_substring, $delim) :)
+            (: find the last occurance: note this relies on the greedy regex matching - not sure if reliable;  motivated by: http://www.xqueryfunctions.com/xq/functx_substring-before-last.html :)
+            replace($str_substring, concat("^(.*)","[",$delim,"]",".*"), '$1')
+          else
+            $str_substring
+    else
+        $str
+};
+
 (: mods/titleInfo[not @type]; there may be no mods and title might be in `$metadata/resource_metadata/oai_dc:dc/dc:title/text()` therefore use @label :)
 (: A complext example
  <title>Review: Teresa Ransom:
@@ -517,6 +535,27 @@ declare function th:get_title($node as node(), $cModel as xs:string) as xs:strin
         $node/@label/data()
       else
         fn:error(xs:QName('label'), concat('title/label required field is missing: ', th:get_id($node)))
+};
+
+(: A truncated version of the title: used for the Drupal title field that has a limited length :)
+declare function th:get_title_256_characters($node as node(), $cModel as xs:string) as xs:string
+{
+    let $title := th:get_title($node, $cModel)
+    let $str_length := 256 - 3 (: for the "..." in the truncated string :)
+    return
+        if (string-length($title) > $str_length)
+        then concat(th:truncate_string($title, $str_length), "...")
+        else
+            $title
+};
+
+(: The extented Drupal title field :)
+declare function th:get_title_full($node as node(), $cModel as xs:string) as xs:string
+{
+    let $title := th:get_title($node, $cModel)
+    let $sub_title := $node/resource_metadata/(mods:mods)/mods:titleInfo[not(@type)]/mods:subTitle
+    return
+        string-join( ($title, $sub_title), ": ")
 };
 
 (: mods/titleInfo[@type="translated" @xml:lang="[lang code]"] :)
@@ -552,7 +591,7 @@ declare function th:mods_name_type($mods_name as element()) as xs:string
     switch($mods_name/@type/data())
         case 'personal' return 'presonal'
         case 'corporate' return 'corporate'
-        default return 'presonal'
+        default return 'personal'
 };
 
 declare function th:mods_name_formater($mods_name as node()) as xs:string
@@ -1053,6 +1092,41 @@ declare function th:get_related_item_place_boolean($node as node()) as xs:string
         ""
 };
 
+(: Related Item Title :)
+(: $node/resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo[not(@*) or @usage='primary']
+                /mods:title/text()
+ :)
+declare function th:get_related_item_title($node as node()) as xs:string
+{
+    (: filter out mods:place with newline characters :)
+    let $normalized_space_values :=
+        for $i in
+            $node/resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo
+                [not(@*) or @usage='primary']
+                /mods:title/text()
+        return
+            if (normalize-space($i) != '') then
+                $i
+            else
+                ()
+    return
+        string-join($normalized_space_values, $th:WORKBENCH_SEPARATOR)
+
+};
+
+(: The extented Drupal title field :)
+declare function th:get_related_item_title_full($node as node()) as xs:string
+{
+    let $title := th:get_related_item_title($node)
+    let $sub_title := $node/resource_metadata/(mods:mods)/mods:relatedItem/mods:titleInfo[not(@type)]/mods:subTitle/text()
+    return
+        if (not(empty($sub_title)))
+        then
+            string-join( ($title, $sub_title), ": ")
+        else
+            $title
+};
+
 (: mods/relatedItem/titleInfo[@type="alternative" or @type="abbreviated" or @type="uniform"] :)
 declare function th:get_related_item_title_alt($node as node()) as xs:string
 {
@@ -1141,29 +1215,6 @@ declare function th:get_related_item_place_published($node as node()) as xs:stri
                 ()
     return
         string-join($normalized_space_values, $th:WORKBENCH_SEPARATOR)
-};
-
-
-(: Related Item Title :)
-(: $node/resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo[not(@*) or @usage='primary']
-                /mods:title/text()
- :)
-declare function th:get_related_item_title($node as node()) as xs:string
-{
-    (: filter out mods:place with newline characters :)
-    let $normalized_space_values :=
-        for $i in
-            $node/resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo
-                [not(@*) or @usage='primary']
-                /mods:title/text()
-        return
-            if (normalize-space($i) != '') then
-                $i
-            else
-                ()
-    return
-        string-join($normalized_space_values, $th:WORKBENCH_SEPARATOR)
-
 };
 
 (: Related Item Type :)
