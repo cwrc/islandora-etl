@@ -506,7 +506,7 @@ declare function th:truncate_string($str as xs:string, $len as xs:integer) as xs
             (: find the last occurance: note this relies on the greedy regex matching - not sure if reliable;  motivated by: http://www.xqueryfunctions.com/xq/functx_substring-before-last.html :)
             replace($str_substring, concat("^(.*)","[",$delim,"]",".*"), '$1')
           else
-            $str_substring
+            fn:error(xs:QName('title'), concat('can not trucate title: ', $str_substring))
     else
         $str
 };
@@ -538,10 +538,10 @@ declare function th:get_title($node as node(), $cModel as xs:string) as xs:strin
 };
 
 (: A truncated version of the title: used for the Drupal title field that has a limited length :)
-declare function th:get_title_256_characters($node as node(), $cModel as xs:string) as xs:string
+declare function th:get_title_255_characters($node as node(), $cModel as xs:string) as xs:string
 {
     let $title := th:get_title($node, $cModel)
-    let $str_length := 256 - 3 (: for the "..." in the truncated string :)
+    let $str_length := 255 - 3 (: for the "..." in the truncated string :)
     return
         if (string-length($title) > $str_length)
         then concat(th:truncate_string($title, $str_length), "...")

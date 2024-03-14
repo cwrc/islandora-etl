@@ -17,6 +17,8 @@ declare function tc:common_columns($metadata as node(), $cModel as xs:string, $i
         "url_alias" : concat("/islandora/object/", $id),
         (: "langcode" : tH:get_langcode($metadata), :)
 
+        (: "field_full_title" : tH:get_title($metadata), todo: subtitle or only non-trucated title? :)
+        "field_full_title" : tH:get_title_full($metadata, $cModel),
         "field_alternative_title" : tH:get_title_alt($metadata),
         "field_classification" : tH:get_classification_other($metadata),
         "field_coordinates" : tH:get_subject_cartographic_coordinates($metadata),
@@ -147,7 +149,7 @@ declare function tc:output_csv(
             (: base variables :)
             let $cModel := tH:get_cModel($metadata)
             let $id := tH:get_id($metadata)
-            let $title := tH:get_title($metadata, $cModel)
+            let $title := tH:get_title_255_characters($metadata, $cModel) (: Drupal 255 restriction on title field :)
             let $field_model := tH:get_model_from_cModel($cModel,$id)
             let $field_resource_type := tH:get_type_from_cModel($cModel,$id)
             let $main_file := $metadata/media_exports/media[@ds_id/data() = tH:get_main_file_dsid_from_cModel($cModel,$id)]/@filepath/data()
@@ -205,7 +207,8 @@ declare function tc:output_csv_test_min(
             (: base variables :)
             let $cModel := tH:get_cModel($metadata)
             let $id := tH:get_id($metadata)
-            let $title := tH:get_title($metadata, $cModel)
+            (: let $title := tH:get_title_255_characters($metadata, $cModel) :)
+            let $title := tH:get_title($metadata, $cModel) (: non-truncated title :)
             let $field_model := tH:get_model_from_cModel($cModel,$id)
             let $field_resource_type := tH:get_type_from_cModel($cModel,$id)
 
