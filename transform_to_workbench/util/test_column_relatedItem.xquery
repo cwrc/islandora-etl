@@ -36,16 +36,21 @@ declare variable $FIELD_MEMBER_OF external := "50";
 (: custom content handler :)
 declare function local:generic_custom_function($metadata as item()*) as element()*
 {
-    (: Using the squenence syntax (notice the "()" and "," comma. This also works with "element" syntax "element test {function($metadata)}" :)
+    (: Using the squenence syntax (notice the "()" and "," comma. This also works with "element" syntax "element test {function($metadata)}"
+    <field_title_full>{tH:get_title_full($metadata,"")}</field_title_full>,
+    :)
     (
+        <field_title_trunc>{tH:get_title_255_characters($metadata,"")}</field_title_trunc>,
+
         <general>{tH:get_related_item_idenifier($metadata)}</general>,
         <doi>{tH:get_related_item_idenifier_doi($metadata)}</doi>,
         <isbn>{tH:get_related_item_idenifier_isbn($metadata)}</isbn>,
         <issn>{tH:get_related_item_idenifier_issn($metadata)}</issn>,
         <field_related_item_place_publish>{tH:get_related_item_place_published($metadata)}</field_related_item_place_publish>,
-        <field_related_item_title>{tH:get_related_item_title($metadata)}</field_related_item_title>,
         <field_related_item_type>{tH:get_related_item_type($metadata)}</field_related_item_type>,
         <field_related_item_boolean>{tH:get_related_item_place_boolean($metadata)}</field_related_item_boolean>,
+        <field_related_item_title>{tH:get_related_item_title($metadata)}</field_related_item_title>,
+        <field_related_item_title_full>{tH:get_related_item_title_full($metadata)}</field_related_item_title_full>,
         <field_related_item_alternative_t>{tH:get_related_item_title_alt($metadata)}</field_related_item_alternative_t>,
         <field_related_item_date_created>{tH:get_related_item_date_created($metadata)}</field_related_item_date_created>,
         <field_related_item_date_issued>{tH:get_related_item_date_issued($metadata)}</field_related_item_date_issued>,
@@ -71,17 +76,23 @@ let $items := /metadata[
             resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo/mods:title
             or
             resource_metadata/mods:mods/mods:relatedItem[@type]
-            or 
+            or
             resource_metadata/mods:mods/mods:relatedItem//mods:dateIssued
-            :)
+            or
             resource_metadata/mods:mods/mods:relatedItem//mods:dateCreated
-
+            or
+            resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo/mods:subTitle
+            or
+            resource_metadata/mods:mods/mods:titleInfo/mods:subTitle
+            :)
+            resource_metadata/mods:mods/mods:titleInfo[(not(@*) or @usage/data()='primary')]/mods:title[string-length(normalize-space(string-join(.//text(),"")))>255]
           )
           and
           resource_metadata/mods:mods/mods:titleInfo/mods:title (: some items don't have a title, remove from test for now :)
         )
         (: or contains(@pid/data(), "tpattzzzzzz") :)
     )
+
     and not(@models = $tH:UNSUPPORTED_MODELS)
     (: possibily interesting test cases; the last 3 Orlando have complex titles
     and @pid/data() = [
@@ -109,7 +120,8 @@ let $items := /metadata[
       'orlando:26123127-c104-4cf3-bdb6-481cc096ed7f',
       'orlando:3b3899b1-3a76-4316-b27a-1a9076d53071',
       'orlando:6aa3ed44-fb97-4c96-a1a7-f3260e512676',
-      'tpatt:f996dd38-add2-4dd9-80c5-f231f63b7e4d'
+      'tpatt:f996dd38-add2-4dd9-80c5-f231f63b7e4d',
+      'orlando:12eee6fb-61bd-4206-b61a-429d408df490'
     ])
     ]
 
