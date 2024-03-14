@@ -493,20 +493,30 @@ declare function th:get_cModel($node as node()) as xs:string
       )
 };
 
+(: Drupal title field has a limited length; try to align with <https://style.mla.org/shortening-a-long-title/> :)
 declare function th:truncate_string($str as xs:string, $len as xs:integer) as xs:string
 {
+    (: truncate at last delimiter before the max length; remove punctuation at end :)
     if (string-length($str) > $len)
     then
-        let $delim := ' '
+        let $delim := '[ ]'
         let $str_substring := substring($str, 1, $len)
         return
-          if (contains($str_substring, $delim))
-          then
-            (: substring-before-last($str_substring, $delim) :)
-            (: find the last occurance: note this relies on the greedy regex matching - not sure if reliable;  motivated by: http://www.xqueryfunctions.com/xq/functx_substring-before-last.html :)
-            replace($str_substring, concat("^(.*)","[",$delim,"]",".*"), '$1')
+            if (matches($str_substring, $delim))
+            then
+                (: substring-before-last($str_substring, $delim) :)
+                (: find the last occurance: note this relies on the greedy regex matching - not sure if reliable;  motivated by: http://www.xqueryfunctions.com/xq/functx_substring-before-last.html :)
+                let $truncated := replace($str_substring, concat("^(.*)",$delim,".*"), '$1')
+                let $ending_punctuation := "[.,;:!?]+$"
+                return
+                    (: remove punctuation at the end:)
+                    if (matches($truncated, $ending_punctuation))
+                    then
+                        replace($truncated, concat("^(.*)",$ending_punctuation), '$1')
+                    else
+                        $truncated
           else
-            fn:error(xs:QName('title'), concat('can not trucate title: ', $str_substring))
+                fn:error(xs:QName('title'), concat('can not trucate title: ', $str_substring))
     else
         $str
 };
