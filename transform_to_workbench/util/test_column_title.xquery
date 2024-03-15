@@ -66,12 +66,14 @@ let $items := /metadata[
             resource_metadata/mods:mods/mods:titleInfo/mods:subTitle
             or 
             resource_metadata/mods:mods/mods:titleInfo[(not(@*) or @usage/data()='primary')]/mods:title[string-length(normalize-space(string-join(.//text(),"")))>255]
-            :)
             resource_metadata/mods:mods/mods:titleInfo/mods:title (: some items don't have a title, remove from test for now :)
+            :)
+            
+            resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:titleInfo[not(@type)]/mods:title
             
           )
           and
-          resource_metadata/mods:mods/mods:titleInfo/mods:title (: some items don't have a title, remove from test for now :)
+          contains(@pid/data(), "orlando")
         )
         (: or contains(@pid/data(), "tpattzzzzzz") :)
     )
@@ -97,14 +99,7 @@ let $items := /metadata[
     ]
 :)
     and not(@pid/data() = [
-      'cwrc:4b9f29d1-1175-4a5d-a940-36fe3f2c1000', (: cmodel missing :)
-      'islandora:6f716484-f9e1-4397-a80e-e1094d608e8c',
-      'islandora:a6baa954-d970-48d9-8f9b-47e4985d2095',
-      'orlando:26123127-c104-4cf3-bdb6-481cc096ed7f',
-      'orlando:3b3899b1-3a76-4316-b27a-1a9076d53071',
-      'orlando:6aa3ed44-fb97-4c96-a1a7-f3260e512676',
-      'tpatt:f996dd38-add2-4dd9-80c5-f231f63b7e4d',
-      'orlando:12eee6fb-61bd-4206-b61a-429d408df490'
+      'cwrc:4b9f29d1-1175-4a5d-a940-36fe3f2c1000' (: cmodel missing :)
     ])
     ]
 
