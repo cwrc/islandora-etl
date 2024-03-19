@@ -535,16 +535,30 @@ declare function th:truncate_string($str as xs:string, $len as xs:integer) as xs
 :)
 declare function th:get_title($node as node(), $cModel as xs:string) as xs:string
 {
-    let $title := $node/resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:titleInfo[not(@type)]/mods:title
+    let $title_info := $node/resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:titleInfo[not(@type)]
+    let $title := $title_info/mods:title
     return
-      if (exists($title) and count($title)=1) then
-        normalize-space(string-join($title//text(), ""))
-      else if (exists($title) and count($title)>1) then
-        fn:error(xs:QName('label'), concat('title/label is multivalued - possible content error: ', th:get_id($node)))
-      else if ($cModel = ("info:fedora/islandora:pageCModel", "info:fedora/islandora:collectionCModel", "info:fedora/islandora:criticalEditionCModelPage", "info:fedora/islandora:tei-rdfCModel", "info:fedora/islandora:transcriptionCModel") )  then
-        $node/@label/data()
-      else
-        fn:error(xs:QName('label'), concat('title/label required field is missing: ', th:get_id($node)))
+        if (exists($title) and count($title)=1 and $title_info/mods:nonSort) then
+            let $non_sort := normalize-space(string-join($title_info/mods:nonSort/text(), ""))
+            (: examples:
+            : 	if "La" add space - cwrc:0314fd25-4516-419c-abc2-fe3c480ce876"
+            : 	if "L'" no space - cwrc:049ada3a-7fe4-41d3-aa6a-0928652a4fd3"
+            :)
+            return
+                let $separator :=
+                    if (matches($non_sort, "[']$"))
+                    then ""
+                    else " "
+                return
+                    string-join( ($non_sort,$title), $separator)
+        else if (exists($title) and count($title)=1) then
+            normalize-space(string-join($title//text(), ""))
+        else if (exists($title) and count($title)>1) then
+            fn:error(xs:QName('label'), concat('title/label is multivalued - possible content error: ', th:get_id($node)))
+        else if ($cModel = ("info:fedora/islandora:pageCModel", "info:fedora/islandora:collectionCModel", "info:fedora/islandora:criticalEditionCModelPage", "info:fedora/islandora:tei-rdfCModel", "info:fedora/islandora:transcriptionCModel") )  then
+            $node/@label/data()
+        else
+            fn:error(xs:QName('label'), concat('title/label required field is missing: ', th:get_id($node)))
 };
 
 (: A truncated version of the title: used for the Drupal title field that has a limited length :)
@@ -563,6 +577,7 @@ declare function th:get_title_255_characters($node as node(), $cModel as xs:stri
 declare function th:get_title_full($node as node(), $cModel as xs:string) as xs:string
 {
     let $title := th:get_title($node, $cModel)
+    (: assumes not multiple titleInfo elements: https://github.com/cwrc/islandora-etl/issues/14 :)
     let $sub_title := $node/resource_metadata/(mods:mods)/mods:titleInfo[not(@type)]/mods:subTitle
     return
         string-join( ($title, $sub_title), ": ")

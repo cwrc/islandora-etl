@@ -37,9 +37,10 @@ declare variable $FIELD_MEMBER_OF external := "50";
 declare function local:generic_custom_function($metadata as item()*) as element()*
 {
     (: Using the squenence syntax (notice the "()" and "," comma. This also works with "element" syntax "element test {function($metadata)}"
-    <field_title_full>{tH:get_title_full($metadata,"")}</field_title_full>,
+    
     :)
     (
+        <field_title_full>{tH:get_title_full($metadata,"")}</field_title_full>,
         <field_title_trunc>{tH:get_title_255_characters($metadata,"")}</field_title_trunc>,
         <field_title_alternative>{tH:get_title_alt($metadata)}</field_title_alternative>,
 
@@ -73,7 +74,7 @@ let $items := /metadata[
             
           )
           and
-          contains(@pid/data(), "orlando")
+          @pid/data() = ["cwrc:0314fd25-4516-419c-abc2-fe3c480ce876","cwrc:049ada3a-7fe4-41d3-aa6a-0928652a4fd3"]
         )
         (: or contains(@pid/data(), "tpattzzzzzz") :)
     )
