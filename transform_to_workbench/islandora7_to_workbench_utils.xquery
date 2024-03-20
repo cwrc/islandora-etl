@@ -1142,7 +1142,7 @@ declare function th:get_related_item_title($node as node()) as xs:string
             let $non_sort := th:get_non_sort_title($title_info)
             return concat($non_sort,$normalized_space_values)
         else if (exists($title) and count($title)=1) then
-            $normalized_space_values
+            string-join($normalized_space_values, "")
         else if (exists($title) and count($title)>1) then
             fn:error(xs:QName('label'), concat('relatedItem title/label is multivalued - possible content error: ', th:get_id($node)))
         else

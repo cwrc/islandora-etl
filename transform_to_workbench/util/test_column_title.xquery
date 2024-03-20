@@ -77,7 +77,9 @@ let $items := /metadata[
           @pid/data() = [
             "cwrc:0314fd25-4516-419c-abc2-fe3c480ce876", (: nonsort "La":)
             "cwrc:049ada3a-7fe4-41d3-aa6a-0928652a4fd3", (: nonSort "L'":)
-            "cwrc:4b113f6b-0831-4183-8fc4-5d82bb9384e0" (: basic:)
+            "cwrc:4b113f6b-0831-4183-8fc4-5d82bb9384e0", (: basic:)
+            "orlando:1155fe3e-6b41-477b-a7c2-51fdfd0cbd55", (: title with sub-element mods:extension :)
+            "orlando:09800b1f-fc45-4a38-969c-9fe795064f9e"  (: title with sub-element mods:extension more complex :)
           ]
         )
         (: or contains(@pid/data(), "tpattzzzzzz") :)
