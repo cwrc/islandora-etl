@@ -493,6 +493,20 @@ declare function th:get_cModel($node as node()) as xs:string
       )
 };
 
+declare function th:get_non_sort_title($title_info as node()) as xs:string
+{
+    let $non_sort := normalize-space(string-join($title_info/mods:nonSort/text(), ""))
+    (: examples:
+    : 	if "La" add space - cwrc:0314fd25-4516-419c-abc2-fe3c480ce876"
+    : 	if "L'" no space - cwrc:049ada3a-7fe4-41d3-aa6a-0928652a4fd3"
+    :)
+    return
+        if (matches($non_sort, "[']$"))
+        then $non_sort
+        else concat($non_sort, " ")
+};
+
+
 (: Drupal title field has a limited length; try to align with <https://style.mla.org/shortening-a-long-title/> :)
 declare function th:truncate_string($str as xs:string, $len as xs:integer) as xs:string
 {
@@ -537,22 +551,13 @@ declare function th:get_title($node as node(), $cModel as xs:string) as xs:strin
 {
     let $title_info := $node/resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:titleInfo[not(@type)]
     let $title := $title_info/mods:title
+    let $title_text := normalize-space(string-join($title//text(), ""))
     return
         if (exists($title) and count($title)=1 and $title_info/mods:nonSort) then
-            let $non_sort := normalize-space(string-join($title_info/mods:nonSort/text(), ""))
-            (: examples:
-            : 	if "La" add space - cwrc:0314fd25-4516-419c-abc2-fe3c480ce876"
-            : 	if "L'" no space - cwrc:049ada3a-7fe4-41d3-aa6a-0928652a4fd3"
-            :)
-            return
-                let $separator :=
-                    if (matches($non_sort, "[']$"))
-                    then ""
-                    else " "
-                return
-                    string-join( ($non_sort,$title), $separator)
+            let $non_sort := th:get_non_sort_title($title_info)
+            return concat($non_sort, $title_text)
         else if (exists($title) and count($title)=1) then
-            normalize-space(string-join($title//text(), ""))
+            $title_text
         else if (exists($title) and count($title)>1) then
             fn:error(xs:QName('label'), concat('title/label is multivalued - possible content error: ', th:get_id($node)))
         else if ($cModel = ("info:fedora/islandora:pageCModel", "info:fedora/islandora:collectionCModel", "info:fedora/islandora:criticalEditionCModelPage", "info:fedora/islandora:tei-rdfCModel", "info:fedora/islandora:transcriptionCModel") )  then
@@ -1123,19 +1128,25 @@ declare function th:get_related_item_place_boolean($node as node()) as xs:string
  :)
 declare function th:get_related_item_title($node as node()) as xs:string
 {
+    let $title_info := $node/resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:titleInfo[not(@*) or @usage='primary']
+    let $title := $title_info/mods:title
     (: filter out mods:place with newline characters :)
     let $normalized_space_values :=
-        for $i in
-            $node/resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo
-                [not(@*) or @usage='primary']
-                /mods:title/text()
+        for $i in $title//text()
         return
-            if (normalize-space($i) != '') then
-                $i
-            else
-                ()
+            if (normalize-space($i) != '')
+            then $i
+            else ()
     return
-        string-join($normalized_space_values, $th:WORKBENCH_SEPARATOR)
+        if (exists($title) and count($title)=1 and $title_info/mods:nonSort) then
+            let $non_sort := th:get_non_sort_title($title_info)
+            return concat($non_sort,$normalized_space_values)
+        else if (exists($title) and count($title)=1) then
+            $normalized_space_values
+        else if (exists($title) and count($title)>1) then
+            fn:error(xs:QName('label'), concat('relatedItem title/label is multivalued - possible content error: ', th:get_id($node)))
+        else
+            string-join($normalized_space_values, $th:WORKBENCH_SEPARATOR)
 
 };
 

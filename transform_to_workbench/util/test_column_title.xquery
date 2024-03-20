@@ -74,7 +74,11 @@ let $items := /metadata[
             
           )
           and
-          @pid/data() = ["cwrc:0314fd25-4516-419c-abc2-fe3c480ce876","cwrc:049ada3a-7fe4-41d3-aa6a-0928652a4fd3"]
+          @pid/data() = [
+            "cwrc:0314fd25-4516-419c-abc2-fe3c480ce876", (: nonsort "La":)
+            "cwrc:049ada3a-7fe4-41d3-aa6a-0928652a4fd3", (: nonSort "L'":)
+            "cwrc:4b113f6b-0831-4183-8fc4-5d82bb9384e0" (: basic:)
+          ]
         )
         (: or contains(@pid/data(), "tpattzzzzzz") :)
     )
