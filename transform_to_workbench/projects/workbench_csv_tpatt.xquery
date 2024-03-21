@@ -77,8 +77,8 @@ let $items := /metadata[
         or contains(@pid/data(), "tpatt")
     )
     and not(@models = $tH:UNSUPPORTED_MODELS)
-    and not(@pid = 'tpatt:e6e1e1d0-a4e6-4ded-9356-0441f9fcba3f')
-    and not(@pid = 'tpatt:f996dd38-add2-4dd9-80c5-f231f63b7e4d')
+    and not(@pid = 'tpatt:e6e1e1d0-a4e6-4ded-9356-0441f9fcba3f') (: missing title :)
+    and not(@pid = 'tpatt:f996dd38-add2-4dd9-80c5-f231f63b7e4d') (: multiple titleInfo :)
     ]
 
 (: Create a local:generic_custom_function to create custom, non-generic fields specific to a given project such as "linked agent" :)
