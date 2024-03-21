@@ -1319,9 +1319,9 @@ declare function th:get_access_condition($node as node()) as xs:string
 {
     let $accessConditionList :=
         for $a in $node/resource_metadata/mods:mods/mods:accessCondition
-        return string-join($a/descendant-or-self::*/text(),'')
+        return normalize-space(string-join($a/descendant-or-self::*/text(),''))
     return
-        string-join($accessConditionList, $th:WORKBENCH_SEPARATOR)
+        string-join(normalize-space($accessConditionList), $th:WORKBENCH_SEPARATOR)
 };
 
 (: ToDo: :)
