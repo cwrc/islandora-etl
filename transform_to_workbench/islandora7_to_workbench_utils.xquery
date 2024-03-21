@@ -932,7 +932,7 @@ declare function th:get_abstract($node as node()) as xs:string
 (: mods/tableOfContents :)
 declare function th:get_table_of_contents($node as node()) as xs:string
 {
-    string-join($node/resource_metadata/mods:mods/mods:tableOfContents/text(), $th:WORKBENCH_SEPARATOR)
+    normalize-space(string-join($node/resource_metadata/mods:mods/mods:tableOfContents/text(), $th:WORKBENCH_SEPARATOR))
 };
 
 (: targetAudience :)
@@ -959,7 +959,7 @@ declare function th:get_note($node as node()) as xs:string
         return
             concat( $label, $i/text() )
     return
-        string-join($notes, $th:WORKBENCH_SEPARATOR)
+        normalize-space(string-join($notes, $th:WORKBENCH_SEPARATOR))
 };
 
 (: subject :)
@@ -1321,7 +1321,7 @@ declare function th:get_access_condition($node as node()) as xs:string
         for $a in $node/resource_metadata/mods:mods/mods:accessCondition
         return normalize-space(string-join($a/descendant-or-self::*/text(),''))
     return
-        string-join(normalize-space($accessConditionList), $th:WORKBENCH_SEPARATOR)
+        normalize-space(string-join($accessConditionList, $th:WORKBENCH_SEPARATOR))
 };
 
 (: ToDo: :)
