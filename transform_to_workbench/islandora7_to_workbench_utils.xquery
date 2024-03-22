@@ -21,6 +21,9 @@ declare variable $th:WORKBENCH_SEPARATOR as xs:string := "^|.|^";
 declare variable $th:EDTF_RANGE_SEPARATOR as xs:string := "/";
 
 declare variable $th:UNSUPPORTED_MODELS := (
+      "['fedora-system:ServiceDefinition-3.0', 'fedora-system:FedoraObject-3.0']",
+      "['fedora-system:ServiceDeployment-3.0', 'fedora-system:FedoraObject-3.0']",
+      "['fedora-system:ContentModel-3.0', 'fedora-system:FedoraObject-3.0']",
       "['cwrc:place-entityCModel', 'fedora-system:FedoraObject-3.0']",
       "['cwrc:person-entityCModel', 'fedora-system:FedoraObject-3.0']",
       "['cwrc:title-entityCModel', 'fedora-system:FedoraObject-3.0']",
@@ -483,7 +486,7 @@ declare function th:get_id($node as node()) as xs:string
 (::)
 declare function th:get_cModel($node as node()) as xs:string
 {
-    let $cModel := $node/resource_metadata/rdf:RDF/rdf:Description/fedora-model:hasModel/@rdf:resource/data()
+    let $cModel := $node/resource_metadata/rdf:RDF/rdf:Description/fedora-model:hasModel[not(@rdf:resource/data()='info:fedora/Array')]/@rdf:resource/data()
     return
       if (not(exists($cModel))) then (
         fn:error(xs:QName('cModel'), concat('cModel required field is missing: ', th:get_id($node)))

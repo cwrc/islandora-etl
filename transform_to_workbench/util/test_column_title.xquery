@@ -62,7 +62,8 @@ let $items := /metadata[
         @pid=$id_list
         or
         (
-          (
+          not(@models = $tH:UNSUPPORTED_MODELS)
+          
             (:
             resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo/mods:subTitle
             or
@@ -73,26 +74,25 @@ let $items := /metadata[
             :)
             (: verify items have a title :)
             (: resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:titleInfo[(not(@*) or @usage/data()='primary')]/mods:title :)
-            not(@models = $tH:UNSUPPORTED_MODELS)
+            
+            (:
             and resource_metadata/(mods:mods|mods:modsCollection/mods:mods)
+            :)
+            (: or contains(@pid/data(), "tpattzzzzzz") :)
+        
+        )      
+    )
 
-          )
-          (:
-          and
-          (: Test set of interesting objects :)
-          @pid/data() = [
+    (:
+    (: Test set of interesting objects :)
+    and @pid/data() = [
             "cwrc:0314fd25-4516-419c-abc2-fe3c480ce876", (: nonsort "La":)
             "cwrc:049ada3a-7fe4-41d3-aa6a-0928652a4fd3", (: nonSort "L'":)
             "cwrc:4b113f6b-0831-4183-8fc4-5d82bb9384e0", (: basic:)
             "orlando:1155fe3e-6b41-477b-a7c2-51fdfd0cbd55", (: title with sub-element mods:extension :)
             "orlando:09800b1f-fc45-4a38-969c-9fe795064f9e"  (: title with sub-element mods:extension more complex :)
-          ]
-          :)
-        )
-        (: or contains(@pid/data(), "tpattzzzzzz") :)
-    )
-
-    and not(@models = $tH:UNSUPPORTED_MODELS)
+    ]
+    :)
     (: possibily interesting test cases; the last 3 Orlando have complex titles
     and @pid/data() = [
       'cjww:be0d8a1e-def6-4bf5-982f-5091426cf87a',
@@ -111,7 +111,7 @@ let $items := /metadata[
       'orlando:10429544-b413-4ac9-bfe9-99475c349906',
       'orlando:0f83e42a-e9d8-425c-bf0a-aa84346f905b'
     ]
-:)
+    :)
     and not(@pid/data() = [
       "orlando:12eee6fb-61bd-4206-b61a-429d408df490", (: only alt title :)
       "orlando:1ef27b89-cdd2-4a33-bde1-f87a6e17bc6b",
@@ -319,7 +319,42 @@ let $items := /metadata[
       "tpatt:e6e1e1d0-a4e6-4ded-9356-0441f9fcba3f"
       ])
 
-    ]
+    (: No MODS datastream -- some from CEWW (others likely removed by dataset pruning of non-migration collections :)
+    and not(@pid/data() = [
+      "cwrc:b71ca122-a1eb-4260-9d13-4640ad189488", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] New Object :)
+      "cwrc:c2103407-fb85-418e-9c26-a61817e91ba3", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] New Object :)
+      "islandora:15929477-e97e-48bf-bdaa-197ae04f84a6", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] The Romance Of A Princess :)
+      "islandora:1a632a5d-3b4e-4e15-b34a-5ec626b9f12b", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] “Sepass Poems: Ancient Songs of Y-Ail-Mihth.” :)
+      "islandora:22b1d946-fd04-4ab1-9472-0e1d3f7e16b2", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] The History of Canada :)
+      "islandora:3925df73-d8ca-4c4b-adf5-ad7e13b55132", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] We and the World, Part II: :)
+      "islandora:5dae139b-75d3-4f3a-81ef-51ffbf3d7e6c", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] Eunice :)
+      "islandora:5e4b39ad-07b6-4c19-ac94-955e895d49c6", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] Beyond The Grave :)
+      "islandora:80909985-7085-4142-a2ae-c65580157772", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] One Hundred Years With The Baptists In Amherst :)
+      "islandora:901250d3-9032-4cc5-b9b0-46aeec28ee98", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] Annie Louise (Laird) Yeigh fonds :)
+      "islandora:97f3dc06-047a-414a-94b0-9f221f7564ff", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] Sketches of Labrador Life, by a Labrador Woman :)
+      "islandora:9b4cbcb7-4e9e-497c-bced-4cabea467eb2", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] Songs of the Great Dominion: Voices From the Forests Andwaters, the Cities of Canada :)
+      "islandora:a8bd8d7d-ff5e-469e-9d69-c6a2d46abbb0", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] Lila and the Waterfall Fairies :)
+      "islandora:b445766d-4806-4a2e-86b9-093b84281fd8", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] Dictionary of Literary Biography :)
+      "islandora:c48390b2-c7d1-4d8f-9a45-870b5b2a7531", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] Songs of the Great Dominion :)
+      "islandora:ca8b302e-a92c-42ae-9ee8-6092b0d566cb", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] New Object :)
+      "islandora:d00c4691-fc20-4ffd-bd4e-dfb5739883e7", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] The Canadian Bookman :)
+      "islandora:e3c097d8-21ee-48f3-9687-feeb16f566ec", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] One Hundred Years With The Baptists In Amherst :)
+      "islandora:e886e949-d27b-4baf-b1e5-4b675e7651b4", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] The Canadian Birthday Book With Poetical Selections For Every Day in the Year From Canadian Writers, English and French :)
+      "islandora:f7bb9c39-c290-4bc9-b2c6-013578b8d251", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] The Romance Of A Princess :)
+      "islandora:f7c7b659-7be8-44f8-b6ca-6a17200e1a27", (: ['cwrc:citationCModel', 'fedora-system:FedoraObject-3.0'] A Gentlewoman in Upper Canada :)
+      "islandora:0739ace9-b30c-4bf8-835c-c12672f75039", (: ['fedora-system:FedoraObject-3.0'] New Object :)
+      "islandora:63c206cd-ee0b-4e9a-923c-40eefdba3e86", (: ['fedora-system:FedoraObject-3.0'] New Object :)
+      "cwrc:410129e7-3fed-4d30-9263-9be8ddeea2d8",      (: ['islandora:binaryObjectCModel', 'fedora-system:FedoraObject-3.0'] New Object :)
+      "digitalpage:27d026b8-7c92-4974-9637-48bfe40eed74", (: ['islandora:bookCModel', 'fedora-system:FedoraObject-3.0'] mods000002 :)
+      "emic:4379",                                      (: ['islandora:bookCModel', 'fedora-system:FedoraObject-3.0'] An Open Letter to Louis Dudek :)
+      "emic:5023",                                      (: ['islandora:bookCModel', 'fedora-system:FedoraObject-3.0'] New Object :)
+      "digitalpage:33045eb2-6873-461b-9602-aed1dcc535f3", (: ['islandora:eventCModel', 'islandora:entityCModel', 'fedora-system:FedoraObject-3.0'] Murder of Mrs. Sibley :)
+      "islandora:tei_sample_schema",                    (:['islandora:markupeditorschemaCModel', 'fedora-system:FedoraObject-3.0'] CWRC_EMiC_TEI_Schema :)
+      "cwrc:f2f8506f-39ce-426a-ad33-9ed2e276e1e9",      (: ['islandora:sp-audioCModel', 'fedora-system:FedoraObject-3.0'] test audio 2020 :)
+      "cwrc:f281637e-42af-4a7b-9e56-58de1b29a61b",      (: ['islandora:sp_html_snippet', 'fedora-system:FedoraObject-3.0'] New Object :)
+      "cwrc:f0b1b6a5-33fa-40e4-92a7-137ebf58613a"       (: ['islandora:versionCModel', 'fedora-system:FedoraObject-3.0'] New Object :)
+    ])
+  ]
 
 (: Create a local:generic_custom_function to create custom, non-generic fields specific to a given project such as "linked agent" :)
 (: The `#2` in the function: the digit represents the number of arguments of your function (otherwise get an empty-sequence error). :)
