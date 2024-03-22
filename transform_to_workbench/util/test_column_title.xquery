@@ -127,7 +127,7 @@ let $items := /metadata[
       'cwrc:4b9f29d1-1175-4a5d-a940-36fe3f2c1000'(: cmodel missing :)
     ])
     and not(@pid/data() = [
-      "cwrc:514cdf25-088a-43c4-936c-6cd31fe5bc81", (: only @displayLabel:)
+      "cwrc:514cdf25-088a-43c4-936c-6cd31fe5bc81", (: second titleInfo present with @displayLabel:)
       "cwrc:405bc80c-c5f1-4b17-ae68-f3ed9bec6829",
       "cwrc:5bd1a665-7441-45ce-b41b-47d59f3a6463",
       "cwrc:97df9a19-51fa-483e-a8fe-9c8bcb100ea0"
@@ -214,9 +214,9 @@ let $items := /metadata[
       "islandora:e0013f9a-af8b-4576-b5c0-5f03f2ac861a"
       ])
     (:
-    Items with no main title and no dc:title that are within the list of supported cModels
+    no main title and no dc:title that are within the list of supported cModels
     /metadata[
-        not(@models = $tH:UNSUPPORTED_MODELS) 
+        not(@models = $tH:UNSUPPORTED_MODELS)
         and not(resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:titleInfo[(not(@*) or @usage/data()='primary')]/mods:title)
         and not(resource_metadata/oai_dc:dc/dc:title)
     ]/@pid/data()
