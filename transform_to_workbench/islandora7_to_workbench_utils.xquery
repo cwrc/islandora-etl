@@ -671,7 +671,7 @@ declare function th:generic_linked_agent($mods_name as node()*) as xs:string*
             then $th:WORKBENCH_SEPARATOR
             else ""
         return
-            let $formated_name := string-join($mods_name/mods:namePart/text())
+            let $formated_name := th:mods_name_formater($mods_name)
             (: if mods name has multiple roles :)
             for $role in $role_list
                 return concat($separator, 'relators:', $role, ":person:", $formated_name)
