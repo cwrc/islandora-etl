@@ -377,9 +377,10 @@ declare function th:get_marcrelator_term_from_text($role as xs:string, $id as xs
         case "Transcriber"                  return ("ths")
         case "Translator"                   return ("trl")
         case "Videographer"                 return ("vdg")
-        default (: Exceptions found in the tpatt collection :)
+        default
             return
             switch ($role)
+                (: Exceptions found in the tpatt collection :)
                 case "art"          return ("art") (: sometimes code is entered when text is specified :)
                 case "aut"          return ("aut") (: sometimes code is entered when text is specified :)
                 case "edt"          return ("edt") (: sometimes code is entered when text is specified :)
@@ -390,6 +391,13 @@ declare function th:get_marcrelator_term_from_text($role as xs:string, $id as xs
                 case "co-editor"   return ("edt") (: tpatt problem :)
                 case "Author of introduction, etc"        return ("aui")
                 case "photographer" return ("pht")
+                (: Exceptions found in the orlando collection :)
+                case "introduction"         return ("win") (: todo: is this mapping correct? :)
+                case "Introduction"         return ("win") (: todo: is this mapping correct? :)
+                case "afterword"            return ("aft") (: todo: is this mapping correct? :)
+                case "revised"              return ("edt") (: todo: is this mapping correct? :)
+                case "Series editor"        return ("edt") (: todo: is this mapping correct? :)
+                case "ctb"                  return ("ctb") (: sometimes code is entered when text is specified :)
                 default
                 return
                     fn:error(xs:QName('marcrelator'), concat('Marcrelator mapping missing: [', $role, ']', ' [', $id, ']'))
