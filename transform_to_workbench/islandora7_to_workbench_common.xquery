@@ -203,6 +203,7 @@ declare function tc:output_csv_test_min(
     <csv>
     {
         for $metadata in $item_list
+            order by $metadata/@pid/data()
 
             (: base variables :)
             let $cModel := tH:get_cModel($metadata)

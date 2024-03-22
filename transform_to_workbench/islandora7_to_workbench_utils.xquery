@@ -560,7 +560,17 @@ declare function th:get_title($node as node(), $cModel as xs:string) as xs:strin
             $title_text
         else if (exists($title) and count($title)>1) then
             fn:error(xs:QName('label'), concat('title/label is multivalued - possible content error: ', th:get_id($node)))
-        else if ($cModel = ("info:fedora/islandora:pageCModel", "info:fedora/islandora:collectionCModel", "info:fedora/islandora:criticalEditionCModelPage", "info:fedora/islandora:tei-rdfCModel", "info:fedora/islandora:transcriptionCModel") )  then
+        else if ($cModel = (
+                "info:fedora/islandora:pageCModel",
+                "info:fedora/islandora:collectionCModel",
+                "info:fedora/islandora:criticalEditionCModel",
+                "info:fedora/islandora:criticalEditionCModelPage",
+                "info:fedora/islandora:tei-rdfCModel",
+                "info:fedora/islandora:transcriptionCModel",
+                "info:fedora/islandora:OACCModel",
+                "info:fedora/islandora:digitalusCModel",
+                "info:fedora/islandora:sp_basic_image"
+                ) )  then
             $node/@label/data()
         else
             fn:error(xs:QName('label'), concat('title/label required field is missing: ', th:get_id($node)))
