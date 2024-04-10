@@ -640,7 +640,7 @@ declare function th:mods_name_role($mods_role as element()*) as xs:string+
 declare function th:mods_name_type($mods_name as element()) as xs:string
 {
     switch($mods_name/@type/data())
-        case 'personal' return 'presonal'
+        case 'personal' return 'personal'
         case 'corporate' return 'corporate'
         default return 'personal'
 };

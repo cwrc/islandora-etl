@@ -75,6 +75,7 @@ let $items := /metadata[
     (
         @pid=$id_list
         or contains(@pid/data(), "orlando:")
+        (: and @pid="orlando:136825c0-4753-43d4-904c-d03dbcad0644" :)
     )
     and not(@models = $tH:UNSUPPORTED_MODELS)
     and not(@pid= [
