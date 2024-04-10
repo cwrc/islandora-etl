@@ -62,8 +62,8 @@ let $items := /metadata[
         @pid=$id_list
         or
         (
-          not(@models = $tH:UNSUPPORTED_MODELS)
-          
+            not(@models = $tH:UNSUPPORTED_MODELS)
+
             (:
             resource_metadata/mods:mods/mods:relatedItem/mods:titleInfo/mods:subTitle
             or
@@ -74,26 +74,29 @@ let $items := /metadata[
             :)
             (: verify items have a title :)
             (: resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:titleInfo[(not(@*) or @usage/data()='primary')]/mods:title :)
-            
+
             (:
             and resource_metadata/(mods:mods|mods:modsCollection/mods:mods)
             :)
             (: or contains(@pid/data(), "tpattzzzzzz") :)
-        
-        )      
+
+        )
     )
 
-    (:
     (: Test set of interesting objects :)
+    (:
+    :)
     and @pid/data() = [
             "cwrc:0314fd25-4516-419c-abc2-fe3c480ce876", (: nonsort "La":)
             "cwrc:049ada3a-7fe4-41d3-aa6a-0928652a4fd3", (: nonSort "L'":)
             "cwrc:4b113f6b-0831-4183-8fc4-5d82bb9384e0", (: basic:)
             "orlando:1155fe3e-6b41-477b-a7c2-51fdfd0cbd55", (: title with sub-element mods:extension :)
-            "orlando:09800b1f-fc45-4a38-969c-9fe795064f9e"  (: title with sub-element mods:extension more complex :)
+            "orlando:09800b1f-fc45-4a38-969c-9fe795064f9e",  (: title with sub-element mods:extension more complex :)
+            "enip:034f90bb-271e-4c8b-b221-b11737122637",  (: title with multiple relatedItem title & newline in title :)
+            ""
     ]
-    :)
-    (: possibily interesting test cases; the last 3 Orlando have complex titles
+    (: possibily interesting test cases; the last 3 Orlando have complex titles :)
+    (:
     and @pid/data() = [
       'cjww:be0d8a1e-def6-4bf5-982f-5091426cf87a',
       'cwrc:96625e12-5100-4748-8db7-806d8fa2bf3f',

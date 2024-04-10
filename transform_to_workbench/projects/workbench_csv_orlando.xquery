@@ -69,6 +69,12 @@ let $items := /metadata[
         (: and @pid="orlando:136825c0-4753-43d4-904c-d03dbcad0644" :)
     )
     and not(@models = $tH:UNSUPPORTED_MODELS)
+    (: remove items with multiple relatedItems 2024-04-10 :)
+    (:
+    and not(
+      /metadata[count(resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:relatedItem[mods:titleInfo])>=2]/@pid/data()
+    )
+    :)
     and not(@pid= [
         (: only alt title :)
         "orlando:12eee6fb-61bd-4206-b61a-429d408df490",
