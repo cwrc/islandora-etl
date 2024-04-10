@@ -1154,14 +1154,14 @@ declare function th:get_related_item_place_boolean($node as node()) as xs:string
  :)
 declare function th:get_related_item_title($node as node()) as xs:string
 {
-    let $title_info := $node/resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:titleInfo[not(@*) or @usage='primary']
+    let $title_info := $node/resource_metadata/(mods:mods|mods:modsCollection/mods:mods)/mods:relatedItem/mods:titleInfo[not(@*) or @usage='primary' or @valueURI]
     let $title := $title_info/mods:title
     (: filter out mods:place with newline characters :)
     let $normalized_space_values :=
         for $i in $title//text()
         return
             if (normalize-space($i) != '')
-            then $i
+            then normalize-space($i) (: e.g., enip:034f90bb-271e-4c8b-b221-b11737122637 newline and end of string :)
             else ()
     return
         if (exists($title) and count($title)=1 and $title_info/mods:nonSort) then
