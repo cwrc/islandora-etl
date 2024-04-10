@@ -42,27 +42,18 @@ declare function local:generic_custom_function($metadata as item()*) as element(
 {
     <field_linked_agent>
     {
-        (: toDo: very simplistic; assumes mods:namePart contains text and in test; expand :)
-        for $mods_name at $pos in $metadata/resource_metadata/mods:mods/mods:name[exists(mods:namePart/text())]
-            let $role_list := tH:mods_name_role($mods_name/mods:role)
-            let $person_type := tH:mods_name_type($mods_name)
-            let $separator :=
-                if ($pos > 1 or count($mods_name/mods:role) > 1)
-                then $tH:WORKBENCH_SEPARATOR
-                else ""
-            return
-                (: ENIP 2023-11-30: only items with split name parts are duplicates - use first mods namePart or add test for duplication :)
-                let $formated_name := string-join($mods_name/(mods:namePart)[1]/text())
-                (: if mods name has multiple roles :)
-                for $role in $role_list
-                    return concat($separator, 'relators:', $role, ":person:", $formated_name)
-
+        (: ToDo: very simplistic; add project specific code, if needed :)
+        tH:generic_linked_agent(
+            $metadata/resource_metadata/mods:mods/mods:name[exists(mods:namePart/text())]
+            )
     }
     </field_linked_agent>,
     <field_related_item_contributor_s>
     {
-        (: toDo: don't use this placeholder, add project specific code :)
-        tH:generic_linked_agent($metadata/resource_metadata/mods:mods/mods:relatedItem/mods:name[exists(mods:namePart/text())])
+        (: ToDo: very simplistic; add project specific code, if needed :)
+        tH:generic_linked_agent(
+            $metadata/resource_metadata/mods:mods/mods:relatedItem/mods:name[exists(mods:namePart/text())]
+            )
     }
     </field_related_item_contributor_s>
 };

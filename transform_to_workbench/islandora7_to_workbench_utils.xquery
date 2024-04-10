@@ -660,21 +660,26 @@ declare function th:mods_name_formater($mods_name as node()) as xs:string
 
 (: Linked agents at the MODS root or within MODS relatedItem: generic handling; not meant to cover all cases :)
 (: toDo: very simplistic; assumes mods:namePart contains text and in test; expand :)
-declare function th:generic_linked_agent($mods_name as node()*) as xs:string*
+declare function th:generic_linked_agent($mods_name as node()*) as xs:string
 {
     (: $metadata/resource_metadata/mods:mods/mods:name[exists(mods:namePart/text())] :)
-    for $mods_name at $pos in $mods_name
-        let $role_list := th:mods_name_role($mods_name/mods:role)
-        let $person_type := th:mods_name_type($mods_name)
-        let $separator :=
-            if ($pos > 1 or count($mods_name/mods:role) > 1)
-            then $th:WORKBENCH_SEPARATOR
-            else ""
-        return
+    let $name_seq :=
+        for $mods_name at $pos in $mods_name
+            let $role_list := th:mods_name_role($mods_name/mods:role)
+            let $person_type := th:mods_name_type($mods_name)
+            let $separator :=
+                if ($pos > 1 or count($mods_name/mods:role) > 1)
+                then $th:WORKBENCH_SEPARATOR
+                else ""
+            (: generic name formatter -- will not work in all cases :)
             let $formated_name := th:mods_name_formater($mods_name)
-            (: if mods name has multiple roles :)
-            for $role in $role_list
-                return concat($separator, 'relators:', $role, ":person:", $formated_name)
+            return
+                (: if mods name has multiple roles :)
+                for $role in $role_list
+                    return concat($separator, 'relators:', $role, ":", $person_type, ":", $formated_name)
+    return
+        (: convert sequence of atomic strings to a string -- otherwise prints a space char between sequence item :)
+        string-join($name_seq, "")
 };
 
 (: ToDo :)
