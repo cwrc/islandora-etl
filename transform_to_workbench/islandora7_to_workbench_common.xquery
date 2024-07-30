@@ -53,6 +53,10 @@ declare function tc:common_columns($metadata as node(), $cModel as xs:string, $i
         "field_subjects_name" : tH:get_subject_name($metadata),
         "field_table_of_contents" : tH:get_table_of_contents($metadata),
         "field_temporal_subject" : tH:get_subject_temporal($metadata),
+        (:location/extent:)
+        "field_detailed_location_volume" : tH:get_detail_volume($metadata),
+        "field_detailed_location_issue" : tH:get_detail_issue($metadata),
+        "field_extent" : tH:get_detail_extent($metadata),
         (: relatedItem :)
         "field_related_item_boolean" : tH:get_related_item_place_boolean($metadata),
         "field_related_item_title" : tH:get_related_item_title($metadata),
