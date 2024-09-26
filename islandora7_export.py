@@ -6,6 +6,7 @@ import json
 import mimetypes
 import os
 import requests
+from requests.adapters import HTTPAdapter, Retry
 import xml.etree.cElementTree as etree
 from getpass import getpass
 from urllib.parse import urljoin
@@ -93,6 +94,15 @@ def init_session(args):
     # initial session with Islandora 7 site
     session = requests.Session()
     session.auth = (username, password)
+
+    # https://urllib3.readthedocs.io/en/latest/reference/urllib3.util.html#urllib3.util.Retry
+    retries = Retry(
+            total=5,
+            backoff_factor=1.0,
+            status_forcelist=[ 500, 502, 503, 504 ],
+            raise_on_status=True
+            )
+    session.mount(args.server, HTTPAdapter(max_retries=retries))
 
     response = session.post(
         urljoin(args.server, 'rest/user/login'),
