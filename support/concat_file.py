@@ -17,8 +17,11 @@ import csv
 import logging
 import os
 import shutil
-import tempfile
 import zipfile
+
+from pathlib import Path
+
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -28,21 +31,36 @@ def parse_args():
     parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.WARNING)
     return parser.parse_args()
 
+def is_file_for_archive(file_column, row):
+    valid = False
+    if file_column in ["file_b", "file_workflow"] or file_column == "file_obj" and Path(row['file_obj']).suffix == '.tiff' :
+        valid = True
+    return valid
+
+#
 def filter_header_keys_by_prefix(row, prefix="file_"):
     return {k: v for k, v in row.items() if k.startswith(prefix)}
 
 
 #
-def process(input_csv, report_csv, output_dir):
+def process(input_csv, output_csv, output_dir):
 
     for i, row in enumerate(input_csv):
         zip_file_path = os.path.join(output_dir, row['id'] + ".zip")
         with zipfile.ZipFile(zip_file_path, 'w') as zip_file:
-            with tempfile.TemporaryDirectory() as tmp_dir:
-                for file_column in filter_header_keys_by_prefix(row):
-                    if file_column in ["file_b"]:
-                        shutil.copy(row[file_column], tmp_dir)
-                        zip_file.write(row[file_column], arcname=os.path.join(file_column, os.path.basename(file_column)))
+            for index, file_column in enumerate(filter_header_keys_by_prefix(row)):
+                if (is_file_for_archive(file_column, row)):
+                    zip_file.write(
+                            row[file_column],
+                            arcname=os.path.join(file_column, os.path.basename(row[file_column]))
+                            )
+            # Todo: only write and add row if zip not empty
+            if (index > 0):
+                row['file_combined_zip']=zip_file_path
+                output_csv.writerow(row)
+                print(row)
+            else:
+                print(f"WARNING: no files found for row [{row}]")
 
 
 #
