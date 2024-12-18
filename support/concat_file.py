@@ -1,8 +1,8 @@
 ##############################################################################################
 # desc: starting with a workbench input file, loop through all file_* columns
 #           write allow listed files into a zip file and add to a new CSV column
-#       output:  
-#       input: 
+#       output:
+#       input:
 # usage: python3 concat_file.py \
 #           --output_csv ${output_csv_path} \
 #           --output_file ${output_file_path} \
@@ -25,16 +25,27 @@ from pathlib import Path
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--output_dir', required=True, help='Location to store file.')
-    parser.add_argument('--output_csv', required=True, help='Location to store edited CSV .')
-    parser.add_argument('--input', required=True, help='Input CSV.')
+    parser.add_argument('--output_dir', required=True, help='Location to store zip files.')
+    parser.add_argument('--output_csv', required=True, help='Location to store edited CSV with the additional column file_combined_zip.')
+    parser.add_argument('--input', required=True, help='Input CSV; output of the islandora-elt XQuery tools.')
     parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.WARNING)
+    #parser.add_argument('--logging_level', required=False, help='Logging level.', default=logging.INFO)
     return parser.parse_args()
 
+#
+def print_progress_bar(iteration, length=50, fill='.'):
+    if iteration % length == 0:
+        print(f'{fill}', end="")
+
+
+#
 def is_file_for_archive(file_column, row):
     valid = False
-    if file_column in ["file_b", "file_workflow"] or file_column == "file_obj" and Path(row['file_obj']).suffix == '.tiff' :
-        valid = True
+    if file_column in ["file_workflow", "file_rels-ext", "file_mods"] or (file_column == "file_obj" and Path(row['file_obj']).suffix == '.tiff') :
+        logging.info(f"{row}")
+        logging.info(f"{file_column} {row[file_column]}")
+        if row[file_column] != '':
+            valid = True
     return valid
 
 #
@@ -58,19 +69,26 @@ def process(input_csv, output_csv, output_dir):
             if (index > 0):
                 row['file_combined_zip']=zip_file_path
                 output_csv.writerow(row)
-                print(row)
+                logging.info(row)
             else:
-                print(f"WARNING: no files found for row [{row}]")
+                logging.warning(f"WARNING: no files found for row [{row}]")
+        print_progress_bar(i + 1, length=100)
+    print()
 
 
 #
 def main():
+
     args = parse_args()
+
+    logging.basicConfig(level=args.logging_level)
+
+    if not os.path.exists(args.output_dir): os.makedirs(args.output_dir)
 
     with open(args.input, 'r', encoding="utf-8", newline='') as input_file:
         input_csv = csv.DictReader(input_file)
         with open(args.output_csv, 'wt', encoding="utf-8", newline='') as output_file:
-            print(input_csv.fieldnames)
+            logging.info(input_csv.fieldnames)
             output_fieldnames = input_csv.fieldnames + ["file_combined_zip"]
             output_csv = csv.DictWriter(output_file, fieldnames=output_fieldnames)
             output_csv.writeheader()
