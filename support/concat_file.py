@@ -1,6 +1,7 @@
 ##############################################################################################
-# desc: starting with a workbench input file, loop through all file_* columns
-#           write allow listed files into a zip file and add to a new CSV column
+# desc: starting with a workbench CSV input file, loop through all file_* columns and
+#           write allow listed files into a zip file; create a new Workbench CSV with
+#           new column for the zip file
 #       output:
 #       input:
 # usage: python3 concat_file.py \
