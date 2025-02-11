@@ -4,6 +4,8 @@
 #       and move the directory/files into the destination directory.
 #       The usecase: remove deleted PIDs from past "islandora7_export.py"
 #       or undiserable PIDs (e.g., workshop material) from the content to ingest into Repository v2
+#       Nov 2024 version uses CSV output from list_select_items.xquery or list_all_cwrc_entities.xquery, or any csv in the form of "pid,,,media_list_json"
+# 
 # usage:
 #       python3 islandora7_move_to_directory.py --id_list ${id_list_one_per_line} --source_dir ${SRC} --destination_dir ${DST}
 # license: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
