@@ -218,4 +218,17 @@ for $i in /metadata[@pid=$pid]
 return $i
 ```
 
+## Build sub-set of the full export                                                                                                                                                                                                     ### Template                                                                                                                                                                                                                            First step: create a XQuery to build the subset list via `./transform_to_workbench/util/set_builder_by_project/` where the project specific XQuery contains a list of PIDs that define the sub-set and creates a CSV with a pid and media_list_json column)
+
+Second step: set the ${SET_ID} and run the following
+
+``` bash
+# Must set ${SET_ID}
+python3 /data-migration/tools/islandora-etl/support/islandora7_move_to_directory.py \
+  --id_list /data-migration/data_sub_sets/resources/${SET_ID}/set_${SET_ID}.csv \
+  --source_dir /data-migration/cwrc.ca_exports_metadata_combined/metadata_only_combined_2025-02-13 \
+  --destination_dir /data-migration/data_sub_sets/resources/${SET_ID}/export/ \
+  --modify \
+  >  /data-migration/data_sub_sets/resources/${SET_ID}/log_$(date +"%Y-%m-%dT_%H-%M-%S").log
+```
 
