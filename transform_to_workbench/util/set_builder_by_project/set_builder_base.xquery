@@ -8,10 +8,7 @@ declare namespace mods = "http://www.loc.gov/mods/v3";
 declare namespace dc = "http://purl.org/dc/elements/1.1/";
 
 
-(: A generic / base xquery to produce input for Islandora workbench :)
-(:
-declare function sb:output_csv($item_list as item()*, $custom_function as function(item()) as element()*, $FIELD_MEMBER_OF as xs:string) as element()*
-:)
+(: A generic / base xquery to produce input for islandora7_move_to_directory.py:)
 declare function sb:output_csv(
     $item_list as item()*
     ) as element()*
@@ -36,3 +33,31 @@ declare function sb:output_csv(
         }
     </csv>
 };
+
+
+(::)
+declare function sb:test_media(
+    $item_list as item()*
+    ) as element()*
+{
+    <csv>
+        {
+
+        for $i in $item_list
+            order by $i/@models, $i/@pid
+            for $media in $i/media_exports/media
+
+            return
+            <record>
+                <pid>{$i/@pid/data()}</pid>
+                <model>{$i/@models/data()}</model>
+                <label>{$i/@label/data()}</label>
+                <media>{$media/@filepath/data()}</media>
+            </record>
+
+        }
+    </csv>
+};
+
+
+
