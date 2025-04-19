@@ -1350,18 +1350,61 @@ declare function th:get_access_condition($node as node()) as xs:string
         normalize-space(string-join($accessConditionList, $th:WORKBENCH_SEPARATOR))
 };
 
+(: mods/part/detail type="volume"/number :)
+
+declare function th:get_detail_volume($node as node()) as xs:string
+{if ($node/resource_metadata/mods:mods/mods:part/mods:detail[@type='volume']/mods:number/text()) 
+    then(string-join($node/resource_metadata/mods:mods/mods:part/mods:detail[@type='volume']/mods:number/text(), $th:WORKBENCH_SEPARATOR))
+    else (string-join($node/resource_metadata/mods:mods/mods:relatedItem/mods:part/mods:detail[@type='volume']/mods:number/text(), $th:WORKBENCH_SEPARATOR))
+};
+
+(: mods/part/detail[@type="issue"]/number :)
+
+declare function th:get_detail_issue($node as node()) as xs:string
+
+{if ($node/resource_metadata/mods:mods/mods:part/mods:detail[@type='issue']/mods:number/text()) 
+    then(string-join($node/resource_metadata/mods:mods/mods:part/mods:detail[@type='issue']/mods:number/text(), $th:WORKBENCH_SEPARATOR))
+    else (string-join($node/resource_metadata/mods:mods/mods:relatedItem/mods:part/mods:detail[@type='issue']/mods:number/text(), $th:WORKBENCH_SEPARATOR))
+};
+
+
+(: mods/part/extent[@unit="page"]/start :)
+(: mods/part/extent[@unit="page"]/end :)
+(: mods/part/extent[@unit="page"]/list :)
+
+
+declare function th:get_detail_extent($node as node()) as xs:string
+
+{if ($node/resource_metadata/mods:mods/mods:part/mods:extent/mods:list[text()]) 
+    then(string-join($node/resource_metadata/mods:mods/mods:part/mods:extent/mods:list/text(), $th:WORKBENCH_SEPARATOR))
+
+        else if($node/resource_metadata/mods:mods//mods:part/mods:extent[mods:start/text()and mods:end/text()])
+    then(
+      let $page_start:= $node/resource_metadata/mods:mods//mods:part/mods:extent/mods:start/text()
+      let $page_end:= $node/resource_metadata/mods:mods//mods:part/mods:extent/mods:end/text()
+      return string-join(concat($page_start,'-',$page_end), $th:WORKBENCH_SEPARATOR)       
+    )
+    else if($node/resource_metadata/mods:mods//mods:part/mods:extent[mods:start/text()and not(mods:end/text())])
+    then(
+      let $page_start:= $node/resource_metadata/mods:mods//mods:part/mods:extent/mods:start/text()
+      return string-join(concat('from p. ',$page_start), $th:WORKBENCH_SEPARATOR)    )
+else if($node/resource_metadata/mods:mods//mods:part/mods:extent[mods:end/text()and not(mods:start/text())])
+    then(
+      let $page_end:= $node/resource_metadata/mods:mods//mods:part/mods:extent/mods:end/text()
+      return string-join(concat('to p. ',$page_end), $th:WORKBENCH_SEPARATOR)    )    
+    
+};
+
 (: ToDo: :)
 (: part :)
 (: mods/part/detail/title :)
 (: mods/part/date :)
-(: mods/part/detail[@type="volume"]/number :)
-(: mods/part/detail[@type="issue"]/number :)
-(: mods/part/extent[@unit="page"]/start :)
-(: mods/part/extent[@unit="page"]/end :)
+
 
 (: ToDo: :)
 (: extension :)
 (: mods/extension :)
+
 
 (: ToDo: :)
 (: recordInfo :)
