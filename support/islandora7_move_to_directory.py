@@ -50,7 +50,10 @@ def handle_media(pid, dir_set, dst_dir, modify):
 def copy_attached_media(pid, media_list_json, dest_dir, modify):
     for media_path in json.loads(media_list_json):
         dest_filename = os.path.basename(media_path)
-        dest_path = os.path.join(dest_dir, dest_filename)
+        dest_root = os.path.join(dest_dir, pid)
+        dest_path = os.path.join(dest_root, dest_filename)
+        if not os.path.exists(dest_root):
+            os.makedirs(dest_root)
         if modify is True:
             #print(f"Metadata [{pid}] {media_path} to {dest_path}")
             shutil.copy(media_path, dest_path)
