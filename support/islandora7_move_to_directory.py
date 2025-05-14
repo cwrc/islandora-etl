@@ -18,6 +18,7 @@ import csv
 import glob
 import json
 import logging
+import hashlib
 import shutil
 import os
 
@@ -29,6 +30,7 @@ def parse_args():
     parser.add_argument('--source_dir', required=True, help='Source directory root.')
     parser.add_argument('--destination_dir', required=True, help='Destination directory to move object into.')
     parser.add_argument('--modify', action='store_true', help='Default is a dry run without modification.')
+    parser.add_argument('--checksum', action='store_true', help='Calculate checksum.')
     return parser.parse_args()
 
 
@@ -47,7 +49,7 @@ def handle_media(pid, dir_set, dst_dir, modify):
 
 
 #
-def copy_attached_media(pid, media_list_json, dest_dir, modify):
+def copy_attached_media(pid, media_list_json, dest_dir, modify=False, checksum=True):
     for media_path in json.loads(media_list_json):
         dest_filename = os.path.basename(media_path)
         dest_root = os.path.join(dest_dir, pid)
@@ -57,12 +59,17 @@ def copy_attached_media(pid, media_list_json, dest_dir, modify):
         if modify is True:
             #print(f"Metadata [{pid}] {media_path} to {dest_path}")
             shutil.copy(media_path, dest_path)
+        elif (checksum):
+            if calculate_checksum(media_path) != calculate_checksum(dest_path):
+                print(f"[WARNING] PID [{pid}] checksum mismatch")
+            else:
+                print(f"PID [{pid}] checksum match")
         else:
             print(f"Metadata [{pid}] {media_path} to {dest_path}")
 
 
 #
-def handle_combined_metadata(pid, dir_set, dest_dir, modify):
+def handle_combined_metadata(pid, dir_set, dest_dir, modify=False, checksum=True):
     if pid in dir_set:
         dest_filename = os.path.basename(dir_set[pid])
         dest_path = os.path.join(dest_dir, dest_filename)
@@ -71,10 +78,28 @@ def handle_combined_metadata(pid, dir_set, dest_dir, modify):
             #shutil.move(dir_set[pid], dst_path)
             # untested
             shutil.copy(dir_set[pid], dest_path)
+        elif (checksum):
+            if calculate_checksum(dir_set[pid]) != calculate_checksum(dest_path):
+                print(f"[WARNING] PID [{pid}] checksum mismatch")
+            else:
+                print(f"PID [{pid}] checksum match")
         else:
             print(f"Move metadata {dir_set[pid]} to {dest_dir}")
+
     else:
         print(f"[WARNING] Metadata - PID [{pid}] not found")
+
+
+def calculate_checksum(file_path, hash_algorithm='sha256'):
+    hash_func = getattr(hashlib, hash_algorithm)()
+    try:
+        with open(file_path, 'rb') as file:
+            while chunk := file.read(8192):
+                hash_func.update(chunk)
+        return hash_func.hexdigest()
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
+        return None
 
 
 # Deprecated
@@ -134,8 +159,8 @@ def main():
             pid = row['pid']
             logging.info(f"id: {id}")
             # handle_media(pid, media_dir_set, args.destination_dir, args.modify)
-            handle_combined_metadata(pid, metadata_dir_set, metadata_dest_dir, args.modify)
-            copy_attached_media(pid, row['media_list_json'], media_dest_dir, args.modify)
+            handle_combined_metadata(pid, metadata_dir_set, metadata_dest_dir, args.modify, args.checksum)
+            copy_attached_media(pid, row['media_list_json'], media_dest_dir, args.modify, args.checksum)
 
 
 if __name__ == "__main__":
