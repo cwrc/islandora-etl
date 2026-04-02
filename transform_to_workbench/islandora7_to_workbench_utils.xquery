@@ -212,7 +212,7 @@ declare function th:get_model_from_cModel($uri as xs:string, $id as xs:string) a
         case "info:fedora/islandora:newspaperIssueCModel"   return "Publication Issue"
         case "info:fedora/islandora:newspaperPageCModel"    return "Page"
         case "info:fedora/islandora:pageCModel"             return "Page"
-        case "info:fedora/cwrc:citationCModel"              return "Citation"
+        case "info:fedora/cwrc:citationCModel"              return "Bibliographic Record"
         case "info:fedora/cwrc:documentCModel"              return "Digital Document"
         case "info:fedora/cwrc:dtocCModel"                  return "Digital Document"
         case "info:fedora/islandora:tei-rdfCModel"          return "UNKNOWN"
@@ -293,6 +293,7 @@ declare function th:get_main_file_dsid_from_cModel($uri as xs:string, $id as xs:
         case "info:fedora/cwrc:citationCModel"              return ("")
         case "info:fedora/islandora:compoundCModel"         return ("")
         case "info:fedora/islandora:sp_html_snippet"        return ("") (: used by 'yale' Fedora 3 namespace:)
+        case "info:fedora/ir:citationCModel" return ("") (:used by Fr_news_WCa:)
         default
           return
             fn:error(xs:QName('Main_file'), concat('Main file is missing: ', $id))
@@ -339,6 +340,7 @@ declare function th:get_marcrelator_term_from_text($role as xs:string, $id as xs
         case "Designer"                     return ("dsr")
         case "Director"                     return ("drt")
         case "Editor"                       return ("edt")
+        case "Edit"                         return ("edt")
         case "Editor of moving image work"  return ("edm")
         case "Editorial director"           return ("edd")
         case "Encoder"                      return ("mrk")
@@ -355,9 +357,10 @@ declare function th:get_marcrelator_term_from_text($role as xs:string, $id as xs
         case "Musical director"             return ("msd")
         case "Musician"                     return ("mus")
         case "Narrator"                     return ("nrt")
+        case "painter"                      return ("art")
         case "Performer"                    return ("prf")
         case "Photographer"                 return ("pht")
-        case "Presenter "                   return ("pre")
+        case "Presenter"                   return ("pre")
         case "Producer"                     return ("pro")
         case "Production manager"           return ("pmn")
         case "Project director"             return ("pdr")
@@ -398,6 +401,49 @@ declare function th:get_marcrelator_term_from_text($role as xs:string, $id as xs
                 case "revised"              return ("edt") (: todo: is this mapping correct? :)
                 case "Series editor"        return ("edt") (: todo: is this mapping correct? :)
                 case "ctb"                  return ("ctb") (: sometimes code is entered when text is specified :)
+                (:Exceptions found in the Fr_news_Wca collection:)
+                case "co-author" return("aut")
+                case "Collector" return("col")
+                case "Reader" return("stl")(:mapped tentatively to story teller:)
+                case "Writer" return("wal")(:mapped tentatively to writer of accompanying material :)
+                case "Accordeon" return("itr")
+                case "co-auteur" return("aut")
+                (:exceptions found in the CA_SP_civ_war:)
+                case "business manager" return("pmn")
+                case "pmn" return("pmn")
+                case "pht" return("pht")
+                case "edt." return("edt")
+                case "wac" return("wac")
+                case "ill" return("ill")
+                case "aui" return ("aut")
+                case "crp" return ("crp")
+                case "Production Company" return ("prn")
+                case "prn" return ("prn")
+                case "com" return ("com")
+                case "nrt" return ("nrt")
+                case "fnd" return ("fnd")
+                case "eng" return ("eng")
+                case "auhor" return ("aut")
+                case "sponser" return ("spn")
+                case "ivr" return ("ivr")
+                case "ive" return ("ive")
+                case "translated" return ("trl")
+                case "managing editor" return ("edt")
+                case "dir" return ("dir")
+                case "aul" return ("aut")
+                case "aus" return ("aus")
+                case "drt" return ("drt")
+                case "act" return ("act")
+                case "cng" return ("cng")
+                case "edm" return ("edm")
+                case "arr" return ("arr")
+                case "trl" return ("trl")
+                case "fmp" return ("fmp")
+                case "adp" return ("adp")
+                case "fmd" return ("fmd")
+                case "flm" return ("flm")
+                case "msd" return ("msd")
+                case "spk" return ("spk")
                 default
                 return
                     fn:error(xs:QName('marcrelator'), concat('Marcrelator mapping missing: [', $role, ']', ' [', $id, ']'))
@@ -640,9 +686,9 @@ declare function th:mods_name_role($mods_role as element()*) as xs:string+
 declare function th:mods_name_type($mods_name as element()) as xs:string
 {
     switch($mods_name/@type/data())
-        case 'personal' return 'personal'
-        case 'corporate' return 'corporate'
-        default return 'personal'
+        case 'personal' return 'person'
+        case 'corporate' return 'corporate_body'
+        default return 'person'
 };
 
 declare function th:mods_name_formater($mods_name as node()) as xs:string
@@ -1023,9 +1069,13 @@ declare function th:get_subject_geographic_code($node as node()) as xs:string
 (: mods/subject/hierarchicalGeographic :)
 declare function th:get_subject_hierarchical_geographic($node as node()) as xs:string
 {
+    string-join($node/resource_metadata//dc:coverage/text(), $th:WORKBENCH_SEPARATOR)
+};
+(:declare function th:get_subject_hierarchical_geographic($node as node()) as xs:string
+{
     string-join($node/resource_metadata/mods:mods/mods:subject/mods:hierarchicalGeographic/text(), $th:WORKBENCH_SEPARATOR)
 };
-
+:)
 (: mods/subject/topic :)
 declare function th:get_subject_topic($node as node()) as xs:string
 {
@@ -1350,18 +1400,62 @@ declare function th:get_access_condition($node as node()) as xs:string
         normalize-space(string-join($accessConditionList, $th:WORKBENCH_SEPARATOR))
 };
 
+(: mods/part/detail type="volume"/number :)
+
+declare function th:get_detail_volume($node as node()) as xs:string
+{if ($node/resource_metadata/mods:mods/mods:part/mods:detail[@type='volume']/mods:number/text()) 
+    then(string-join($node/resource_metadata/mods:mods/mods:part/mods:detail[@type='volume']/mods:number/text(), $th:WORKBENCH_SEPARATOR))
+    else (string-join($node/resource_metadata/mods:mods/mods:relatedItem/mods:part/mods:detail[@type='volume']/mods:number/text(), $th:WORKBENCH_SEPARATOR))
+};
+
+(: mods/part/detail[@type="issue"]/number :)
+
+declare function th:get_detail_issue($node as node()) as xs:string
+
+{if ($node/resource_metadata/mods:mods/mods:part/mods:detail[@type='issue']/mods:number/text()) 
+    then(string-join($node/resource_metadata/mods:mods/mods:part/mods:detail[@type='issue']/mods:number/text(), $th:WORKBENCH_SEPARATOR))
+    else (string-join($node/resource_metadata/mods:mods/mods:relatedItem/mods:part/mods:detail[@type='issue']/mods:number/text(), $th:WORKBENCH_SEPARATOR))
+};
+
+
+(: mods/part/extent[@unit="page"]/start :)
+(: mods/part/extent[@unit="page"]/end :)
+(: mods/part/extent[@unit="page"]/list :)
+
+
+declare function th:get_detail_extent($node as node()) as xs:string
+
+{if ($node/resource_metadata/mods:mods/mods:part/mods:extent[@unit="page"]/mods:list[text()]) 
+    then(string-join($node/resource_metadata/mods:mods/mods:part/mods:extent/mods:list/text(), $th:WORKBENCH_SEPARATOR))
+
+        else if($node/resource_metadata/mods:mods//mods:part/mods:extent[mods:start/text()and mods:end/text()])
+    then(
+      let $page_start:= $node/resource_metadata/mods:mods//mods:part/mods:extent/mods:start/text()
+      let $page_end:= $node/resource_metadata/mods:mods//mods:part/mods:extent/mods:end/text()
+      return string-join(concat($page_start,'-',$page_end), $th:WORKBENCH_SEPARATOR)       
+    )
+    else if($node/resource_metadata/mods:mods//mods:part/mods:extent[mods:start/text()and not(mods:end/text())])
+    then(
+      let $page_start:= $node/resource_metadata/mods:mods//mods:part/mods:extent/mods:start/text()
+      return string-join(concat('from p. ',$page_start), $th:WORKBENCH_SEPARATOR))
+else if($node/resource_metadata/mods:mods//mods:part/mods:extent[mods:end/text()and not(mods:start/text())])
+    then(
+      let $page_end:= $node/resource_metadata/mods:mods//mods:part/mods:extent/mods:end/text()
+      return string-join(concat('to p. ',$page_end), $th:WORKBENCH_SEPARATOR))
+      else "" 
+    
+};
+
 (: ToDo: :)
 (: part :)
 (: mods/part/detail/title :)
 (: mods/part/date :)
-(: mods/part/detail[@type="volume"]/number :)
-(: mods/part/detail[@type="issue"]/number :)
-(: mods/part/extent[@unit="page"]/start :)
-(: mods/part/extent[@unit="page"]/end :)
+
 
 (: ToDo: :)
 (: extension :)
 (: mods/extension :)
+
 
 (: ToDo: :)
 (: recordInfo :)
